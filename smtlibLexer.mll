@@ -84,6 +84,7 @@
       val quoted_string : Lexing.position -> Quoted_string_buffer.t -> t
       val setlogic : t
       val declareconst : t
+      val declarefun : t
       val checksat : t
       val exit : t
       val f_assert : t
@@ -190,6 +191,7 @@ rule main buf = parse
   | ')' { Token.rparen }
   | "set-logic" { Token.setlogic }
   | "declare-const" { Token.declareconst }
+  | "declare-fun" { Token.declarefun }
   | "check-sat" { Token.checksat }
   | "exit" { Token.exit }
   | "assert" { Token.f_assert }
@@ -431,6 +433,7 @@ and scan_block_comment buf locs = parse
         let quoted_string _ buf = IDENT (Buffer.contents buf)
         let setlogic = SETLOGIC
         let declareconst = DECLARECONST
+        let declarefun = DECLAREFUN
         let checksat = CHECKSAT
         let exit = EXIT
         let f_assert = ASSERT

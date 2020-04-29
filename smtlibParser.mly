@@ -18,7 +18,7 @@ let concat_sp_sep_8 a b c d e f g h = "("^a^" "^b^" "^c^" "^d^" "^e^" "^f^" "^g^
 %token <string> IDENT
 %token <int> INT
 %token LPAREN RPAREN COLON EOF SETLOGIC TRUE FALSE NOT AND OR IMPL XOR EQUALS ITE BOOL HASH_SEMI
-%token DECLARECONST CHECKSAT EXIT ASSERT
+%token DECLARECONST DECLAREFUN CHECKSAT EXIT ASSERT
 (*%token ARRAY SORT READ WRITE BITVEC BVAND BVOR BVXOR BVNAND BVNOR BVXNOR BVMUL BVADD BVSUB BVUDIV BVUREM
 %token BVSDIV BVSREM BVSMOD BVSHL BVLSHR BVASHR BVCONCAT BVNEG BVNOT BVLROTATE BVRROTATE BVCOMP
 %token BVEXTRACT BVZEROEXT BVSIGNEXT BVREPEAT BVULT BVULE BVUGT BVUGE BVSLT BVSLE BVSGT BVSGE*)
@@ -63,11 +63,19 @@ assertion:
     { (concat_sp_sep_2 "assert" (to_string_form $3)) }
 ;
 
+args:
+  | LPAREN l=list(sort) RPAREN
+    { let s = (String.concat " " l) in
+      (concat_sp_sep_1 s)}
+;
+
 command:
   | LPAREN SETLOGIC IDENT RPAREN 
     { (concat_sp_sep_2 "set-logic" $3) }
   | LPAREN DECLARECONST IDENT sort RPAREN 
     { (concat_sp_sep_3 "declare-const" $3 $4) }
+  | LPAREN DECLAREFUN IDENT args sort RPAREN
+    { (concat_sp_sep_4 "declare-fun" $3 $4 $5) }
   | LPAREN CHECKSAT RPAREN
     { (concat_sp_sep_1 "checksat") }
   | LPAREN EXIT RPAREN
