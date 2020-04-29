@@ -3,6 +3,7 @@
 
 open Lexing
 open Format
+open SmtlibAst
 
 let concat_sp_sep_1 a = "("^a^")"
 let concat_sp_sep_2 a b = "("^a^" "^b^")"
@@ -32,34 +33,34 @@ sort:
 ;
 
 sorted_term:
-  | TRUE { "true" }
-  | FALSE { "false" }
-  | LPAREN ITE formula sorted_term sorted_term RPAREN
-    { concat_sp_sep_4 "ite" $3 $4 $5 }
-  | IDENT { $1 }
+  | TRUE { BTrue }
+  | FALSE { BFalse }
+  | LPAREN ITE f=formula s1=sorted_term s2=sorted_term RPAREN
+    { Ite (f, s1, s2) }
+  | IDENT { TVar $1 }
 ;
 
 formula:
-  | TRUE { "true" }
-  | FALSE { "false" }
-  | LPAREN NOT formula RPAREN 
-    { concat_sp_sep_2 "not" $3 }
-  | LPAREN AND formula formula RPAREN
-    { concat_sp_sep_3 "and" $3 $4 }
-  | LPAREN OR formula formula RPAREN
-    { concat_sp_sep_3 "or" $3 $4 }
-  | LPAREN IMPL formula formula RPAREN
-    { concat_sp_sep_3 "=>" $3 $4 }
-  | LPAREN XOR formula formula RPAREN
-    { concat_sp_sep_3 "xor" $3 $4 }
-  | LPAREN EQUALS sorted_term sorted_term RPAREN
-    { concat_sp_sep_3 "=" $3 $4 }
-  | IDENT { $1 }
+  | TRUE { True }
+  | FALSE { False }
+  | LPAREN NOT f=formula RPAREN 
+    { Not f }
+  | LPAREN AND f1=formula f2=formula RPAREN
+    { And (f1, f2) }
+  | LPAREN OR f1=formula f2=formula RPAREN
+    { Or (f1, f2) }
+  | LPAREN IMPL f1=formula f2=formula RPAREN
+    { Impl (f1, f2) }
+  | LPAREN XOR f1=formula f2=formula RPAREN
+    { Xor (f1, f2) }
+  | LPAREN EQUALS s1=sorted_term s2=sorted_term RPAREN
+    { Eq (s1, s2) }
+  | IDENT { Var $1 }
 ;
 
 assertion:
   | LPAREN ASSERT formula RPAREN
-    { (concat_sp_sep_2 "assert" $3) }
+    { (concat_sp_sep_2 "assert" (to_string_form $3)) }
 ;
 
 command:
