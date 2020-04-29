@@ -77,6 +77,6 @@ command:
 
 file:
   | l=nonempty_list(command) EOF 
-    { let s = (List.fold_left (^) "\n" l) in
+    { let s = ((String.concat "\n" l)^"\n") in
       print_string s }
 ;
