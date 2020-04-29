@@ -9,8 +9,16 @@ let concat_sp_sep_8 a b c d e f g h = "("^a^" "^b^" "^c^" "^d^" "^e^" "^f^" "^g^
 type sorted_term = 
   | BTrue
   | BFalse
+  | BNot of formula
+  | BAnd of formula * formula
+  | BOr of formula * formula
+  | BImpl of formula * formula
+  | BEq of sorted_term * sorted_term
+  | BXor of formula * formula
   | TVar of string
   | Ite of formula * sorted_term * sorted_term
+  | Appl of string * sorted_term list
+  | F of formula
 and formula = 
   | True
   | False
@@ -28,8 +36,16 @@ let rec to_string_sorted_term =
   function
   | BTrue -> "true"
   | BFalse -> "false"
+  | BNot f -> concat_sp_sep_2 "not" (to_string_form f)
+  | BAnd (x,y) -> concat_sp_sep_3 "and" (to_string_form x) (to_string_form y)
+  | BOr (x,y) -> concat_sp_sep_3 "or" (to_string_form x) (to_string_form y)
+  | BImpl (x,y) -> concat_sp_sep_3 "=>" (to_string_form x) (to_string_form y)
+  | BEq (x,y) -> concat_sp_sep_3 "=" (to_string_sorted_term x) (to_string_sorted_term y)
+  | BXor (x,y) -> concat_sp_sep_3 "xor" (to_string_form x) (to_string_form y)
   | TVar v -> v
   | Ite (x,y,z) -> concat_sp_sep_4 "ite" (to_string_form x) (to_string_sorted_term y) (to_string_sorted_term z)
+  | Appl (f, args) -> "("^f^" "^(String.concat " " (List.map to_string_sorted_term args))^")"
+  | F f -> to_string_form f
 and to_string_form = 
   function
   | True -> "true"
