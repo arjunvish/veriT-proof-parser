@@ -77,7 +77,6 @@ command:
 
 file:
   | l=nonempty_list(command) EOF 
-    { let l1 = (List.map (fun x -> x^"\n") l) in 
-      let s = (List.fold_left (^) "" l1) in
+    { let s = (List.fold_left (^) "\n" l) in
       print_string s }
 ;
