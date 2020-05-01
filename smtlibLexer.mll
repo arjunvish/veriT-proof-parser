@@ -85,6 +85,7 @@
       val setlogic : t
       val declareconst : t
       val declarefun : t
+      val declaresort : t
       val checksat : t
       val exit : t
       val f_assert : t
@@ -98,11 +99,10 @@
       val equals : t
       val f_ite : t
       val bool : t
-      (*val sort : t
       val arr : t
-      val read : t
-      val write : t
-      val bitvec : t
+      val select : t
+      val store : t
+      (*val bitvec : t
       val bvdiseq : t
       val bvand : t
       val bvor : t
@@ -192,6 +192,7 @@ rule main buf = parse
   | "set-logic" { Token.setlogic }
   | "declare-const" { Token.declareconst }
   | "declare-fun" { Token.declarefun }
+  | "declare-sort" { Token.declaresort }
   | "check-sat" { Token.checksat }
   | "exit" { Token.exit }
   | "assert" { Token.f_assert }
@@ -205,11 +206,10 @@ rule main buf = parse
   | "=" { Token.equals }
   | "ite" { Token.f_ite }
   | "Bool" { Token.bool }
-  (*| "Array" { Token.arr }
-  | "sort" { Token.sort }
-  | "read" { Token.read }
-  | "write" { Token.write }
-  | "BitVec" { Token.bitvec }
+  | "Array" { Token.arr }
+  | "select" { Token.select }
+  | "store" { Token.store }
+  (*| "BitVec" { Token.bitvec }
   | "bvand" { Token.bvand }
   | "bvor" { Token.bvor }
   | "bvxor" { Token.bvxor }
@@ -434,6 +434,7 @@ and scan_block_comment buf locs = parse
         let setlogic = SETLOGIC
         let declareconst = DECLARECONST
         let declarefun = DECLAREFUN
+        let declaresort = DECLARESORT
         let checksat = CHECKSAT
         let exit = EXIT
         let f_assert = ASSERT
@@ -447,11 +448,10 @@ and scan_block_comment buf locs = parse
         let equals = EQUALS
         let f_ite = ITE
         let bool = BOOL
-        (*let arr = ARRAY
-        let sort = SORT
-        let read = READ
-        let write = WRITE
-        let bitvec = BITVEC
+        let arr = ARRAY
+        let select = SELECT
+        let store = STORE
+        (*let bitvec = BITVEC
         let bvdiseq = BVDISEQ
         let bvand = BVAND
         let bvor = BVOR

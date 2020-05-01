@@ -1,6 +1,6 @@
 ; EXPECT: unsat
 (set-logic QF_AX)
-(set-info :status unsat)
+;(set-info :status unsat)
 
 (declare-fun a () (Array Bool Bool))
 (declare-fun b () (Array Bool Bool))

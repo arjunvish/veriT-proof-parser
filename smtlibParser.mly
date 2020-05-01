@@ -18,8 +18,8 @@ let concat_sp_sep_8 a b c d e f g h = "("^a^" "^b^" "^c^" "^d^" "^e^" "^f^" "^g^
 %token <string> IDENT
 %token <int> INT
 %token LPAREN RPAREN COLON EOF SETLOGIC TRUE FALSE NOT AND OR IMPL XOR EQUALS ITE BOOL HASH_SEMI
-%token DECLARECONST DECLAREFUN CHECKSAT EXIT ASSERT
-(*%token ARRAY SORT READ WRITE BITVEC BVAND BVOR BVXOR BVNAND BVNOR BVXNOR BVMUL BVADD BVSUB BVUDIV BVUREM
+%token DECLARECONST DECLAREFUN DECLARESORT CHECKSAT EXIT ASSERT ARRAY SELECT STORE
+(*%token BITVEC BVAND BVOR BVXOR BVNAND BVNOR BVXNOR BVMUL BVADD BVSUB BVUDIV BVUREM
 %token BVSDIV BVSREM BVSMOD BVSHL BVLSHR BVASHR BVCONCAT BVNEG BVNOT BVLROTATE BVRROTATE BVCOMP
 %token BVEXTRACT BVZEROEXT BVSIGNEXT BVREPEAT BVULT BVULE BVUGT BVUGE BVSLT BVSLE BVSGT BVSGE*)
 
@@ -30,6 +30,10 @@ let concat_sp_sep_8 a b c d e f g h = "("^a^" "^b^" "^c^" "^d^" "^e^" "^f^" "^g^
 sort:
   | BOOL
     { "Bool" }
+  | IDENT
+    { $1 }
+  | LPAREN ARRAY sort sort RPAREN
+    { (concat_sp_sep_3 "Array" $3 $4) }
 ;
 
 sorted_term:
@@ -52,6 +56,10 @@ sorted_term:
   | IDENT { TVar $1 }
   | LPAREN IDENT l=list(sorted_term) RPAREN
     { Appl ($2, l) }
+  | LPAREN SELECT s1=sorted_term s2=sorted_term RPAREN
+    { Select (s1, s2) }
+  | LPAREN STORE s1=sorted_term s2=sorted_term s3=sorted_term RPAREN
+    { Store (s1, s2, s3) }
 ;
 
 formula:
@@ -90,6 +98,8 @@ command:
     { (concat_sp_sep_3 "declare-const" $3 $4) }
   | LPAREN DECLAREFUN IDENT args sort RPAREN
     { (concat_sp_sep_4 "declare-fun" $3 $4 $5) }
+  | LPAREN DECLARESORT IDENT INT RPAREN
+    { (concat_sp_sep_3 "declare-sort" $3 (string_of_int $4)) }
   | LPAREN CHECKSAT RPAREN
     { (concat_sp_sep_1 "checksat") }
   | LPAREN EXIT RPAREN

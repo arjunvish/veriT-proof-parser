@@ -18,7 +18,8 @@ type sorted_term =
   | TVar of string
   | Ite of formula * sorted_term * sorted_term
   | Appl of string * sorted_term list
-  | F of formula
+  | Select of sorted_term * sorted_term
+  | Store of sorted_term * sorted_term * sorted_term
 and formula = 
   | True
   | False
@@ -43,9 +44,12 @@ let rec to_string_sorted_term =
   | BEq (x,y) -> concat_sp_sep_3 "=" (to_string_sorted_term x) (to_string_sorted_term y)
   | BXor (x,y) -> concat_sp_sep_3 "xor" (to_string_form x) (to_string_form y)
   | TVar v -> v
-  | Ite (x,y,z) -> concat_sp_sep_4 "ite" (to_string_form x) (to_string_sorted_term y) (to_string_sorted_term z)
+  | Ite (x,y,z) -> concat_sp_sep_4 "ite" (to_string_form x) (to_string_sorted_term y) 
+                    (to_string_sorted_term z)
   | Appl (f, args) -> "("^f^" "^(String.concat " " (List.map to_string_sorted_term args))^")"
-  | F f -> to_string_form f
+  | Select (x,y) -> concat_sp_sep_3 "select" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Store (x,y,z) -> concat_sp_sep_4 "store" (to_string_sorted_term x) (to_string_sorted_term y) 
+                      (to_string_sorted_term z)
 and to_string_form = 
   function
   | True -> "true"
