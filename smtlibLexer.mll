@@ -78,6 +78,8 @@
       val rparen : t
       val integer : string -> t
       val ident : string -> t
+      val bv_bin : string -> t
+      val bv_hex : string -> t
       val eof : t
       val simple_string : string -> t
       val hash_semi : t
@@ -102,8 +104,8 @@
       val arr : t
       val select : t
       val store : t
-      (*val bitvec : t
-      val bvdiseq : t
+      val bitvec : t
+      val index : t
       val bvand : t
       val bvor : t
       val bvxor : t
@@ -138,7 +140,7 @@
       val bvslt : t
       val bvsle : t
       val bvsgt : t
-      val bvsge : t*)
+      val bvsge : t
       type s = Quoted_string_buffer.t -> Lexing.lexbuf -> t
       val comment : string -> main:s -> s
       val block_comment : Lexing.position -> main:s -> s
@@ -167,7 +169,6 @@
 
 }
 
-let anything = _*
 let lf = '\010'
 let lf_cr = ['\010' '\013']
 let dos_newline = "\013\010"
@@ -181,6 +182,8 @@ let unquoted_start =
 
 let integer = digit+
 let ident = ('_')* ['a'-'z' 'A'-'Z' '\'' ]['a'-'z' 'A'-'Z' '0'-'9' '\\' '_']*
+let bv_bin = ('#''b')('0'|'1')+
+let bv_hex = ('#''x')(hexdigit)+
 
 rule main buf = parse
   | lf | dos_newline { found_newline lexbuf 0;
@@ -209,7 +212,8 @@ rule main buf = parse
   | "Array" { Token.arr }
   | "select" { Token.select }
   | "store" { Token.store }
-  (*| "BitVec" { Token.bitvec }
+  | "BitVec" { Token.bitvec }
+  | "_" { Token.index }
   | "bvand" { Token.bvand }
   | "bvor" { Token.bvor }
   | "bvxor" { Token.bvxor }
@@ -244,7 +248,7 @@ rule main buf = parse
   | "bvslt" { Token.bvslt }
   | "bvsle" { Token.bvsle }
   | "bvsgt" { Token.bvsgt }
-  | "bvsge" { Token.bvsge }*)
+  | "bvsge" { Token.bvsge }
   | '(' '~' (integer as i) ')' {Token.integer ("-"^i) }
   | integer as i { Token.integer i }
   | '"'
@@ -428,6 +432,8 @@ and scan_block_comment buf locs = parse
         let integer i = INT (int_of_string i)
         let ident i =
           (*try Hashtbl.find keywords i with Not_found ->*) IDENT i
+        let bv_bin b = BVBIN b
+        let bv_hex h = BVHEX h
         let simple_string x =
           (*try Hashtbl.find keywords x with Not_found ->*) IDENT x
         let quoted_string _ buf = IDENT (Buffer.contents buf)
@@ -451,8 +457,8 @@ and scan_block_comment buf locs = parse
         let arr = ARRAY
         let select = SELECT
         let store = STORE
-        (*let bitvec = BITVEC
-        let bvdiseq = BVDISEQ
+        let bitvec = BITVEC
+        let index = INDEX
         let bvand = BVAND
         let bvor = BVOR
         let bvxor = BVXOR
@@ -487,7 +493,7 @@ and scan_block_comment buf locs = parse
         let bvslt = BVSLT
         let bvsle = BVSLE
         let bvsgt = BVSGT
-        let bvsge = BVSGE*)
+        let bvsge = BVSGE
         let block_comment _pos ~main buf lexbuf =
           main buf lexbuf
         let comment _text ~main buf lexbuf =

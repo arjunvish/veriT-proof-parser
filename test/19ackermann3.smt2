@@ -1,9 +1,9 @@
 ; COMMAND-LINE: --bitblast=eager --no-check-models --no-check-proofs --no-check-unsat-cores
 ; EXPECT: unsat
 (set-logic QF_ABV)
-(set-info :smt-lib-version 2.0)
-(set-info :category "crafted")
-(set-info :status unsat)
+;(set-info :smt-lib-version 2.0)
+;(set-info :category "crafted")
+;(set-info :status unsat)
 
 (define-sort bv () (_ BitVec 4))
 (define-sort abv () (Array bv bv))

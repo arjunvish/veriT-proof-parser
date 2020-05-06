@@ -1,0 +1,4 @@
+- multi-arity logical operators like 'and'
+- decimal BVs, ex: (_ bv255 8) for binary 255 in 8 bits
+- set-infos
+- Check entire bv signature with all the extensions

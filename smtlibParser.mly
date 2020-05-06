@@ -17,11 +17,13 @@ let concat_sp_sep_8 a b c d e f g h = "("^a^" "^b^" "^c^" "^d^" "^e^" "^f^" "^g^
 
 %token <string> IDENT
 %token <int> INT
+%token <string> BVBIN
+%token <string> BVHEX
 %token LPAREN RPAREN COLON EOF SETLOGIC TRUE FALSE NOT AND OR IMPL XOR EQUALS ITE BOOL HASH_SEMI
 %token DECLARECONST DECLAREFUN DECLARESORT CHECKSAT EXIT ASSERT ARRAY SELECT STORE
-(*%token BITVEC BVAND BVOR BVXOR BVNAND BVNOR BVXNOR BVMUL BVADD BVSUB BVUDIV BVUREM
+%token BITVEC INDEX BVAND BVOR BVXOR BVNAND BVNOR BVXNOR BVMUL BVADD BVSUB BVUDIV BVUREM
 %token BVSDIV BVSREM BVSMOD BVSHL BVLSHR BVASHR BVCONCAT BVNEG BVNOT BVLROTATE BVRROTATE BVCOMP
-%token BVEXTRACT BVZEROEXT BVSIGNEXT BVREPEAT BVULT BVULE BVUGT BVUGE BVSLT BVSLE BVSGT BVSGE*)
+%token BVEXTRACT BVZEROEXT BVSIGNEXT BVREPEAT BVULT BVULE BVUGT BVUGE BVSLT BVSLE BVSGT BVSGE
 
 
 %start file
@@ -34,6 +36,8 @@ sort:
     { $1 }
   | LPAREN ARRAY sort sort RPAREN
     { (concat_sp_sep_3 "Array" $3 $4) }
+  | LPAREN INDEX BITVEC INT RPAREN
+    { (concat_sp_sep_3 "_" "BitVec" (string_of_int $4)) }
 ;
 
 sorted_term:
@@ -60,6 +64,64 @@ sorted_term:
     { Select (s1, s2) }
   | LPAREN STORE s1=sorted_term s2=sorted_term s3=sorted_term RPAREN
     { Store (s1, s2, s3) }
+  | BVBIN
+    { Bvbin $1 }
+  | BVHEX
+    { Bvhex $1 }
+  | LPAREN BVAND s1=sorted_term s2=sorted_term RPAREN
+    { Bvand (s1, s2) }
+  | LPAREN BVOR s1=sorted_term s2=sorted_term RPAREN
+    { Bvor (s1, s2) }
+  | LPAREN BVXOR s1=sorted_term s2=sorted_term RPAREN
+    { Bvxor (s1, s2) }
+  | LPAREN BVNAND s1=sorted_term s2=sorted_term RPAREN
+    { Bvnand (s1, s2) }
+  | LPAREN BVNOR s1=sorted_term s2=sorted_term RPAREN
+    { Bvnor (s1, s2) }
+  | LPAREN BVXNOR s1=sorted_term s2=sorted_term RPAREN
+    { Bvxnor (s1, s2) }
+  | LPAREN BVMUL s1=sorted_term s2=sorted_term RPAREN
+    { Bvmul (s1, s2) }
+  | LPAREN BVADD s1=sorted_term s2=sorted_term RPAREN
+    { Bvadd (s1, s2) }
+  | LPAREN BVSUB s1=sorted_term s2=sorted_term RPAREN
+    { Bvsub (s1, s2) }
+  | LPAREN BVUDIV s1=sorted_term s2=sorted_term RPAREN
+    { Bvudiv (s1, s2) }
+  | LPAREN BVUREM s1=sorted_term s2=sorted_term RPAREN
+    { Bvurem (s1, s2) }
+  | LPAREN BVSDIV s1=sorted_term s2=sorted_term RPAREN
+    { Bvsdiv (s1, s2) }
+  | LPAREN BVSREM s1=sorted_term s2=sorted_term RPAREN
+    { Bvsrem (s1, s2) }
+  | LPAREN BVSMOD s1=sorted_term s2=sorted_term RPAREN
+    { Bvsmod (s1, s2) }
+  | LPAREN BVSHL s1=sorted_term s2=sorted_term RPAREN
+    { Bvshl (s1, s2) }
+  | LPAREN BVLSHR s1=sorted_term s2=sorted_term RPAREN
+    { Bvlshr (s1, s2) }
+  | LPAREN BVASHR s1=sorted_term s2=sorted_term RPAREN
+    { Bvashr (s1, s2) }
+  | LPAREN BVCONCAT s1=sorted_term s2=sorted_term RPAREN
+    { Bvconcat (s1, s2) }
+  | LPAREN BVNEG s=sorted_term RPAREN
+    { Bvneg s }
+  | LPAREN BVNOT s=sorted_term RPAREN
+    { Bvnot s }
+  | LPAREN LPAREN INDEX BVEXTRACT i=INT j=INT RPAREN s=sorted_term RPAREN
+    { Bvextract (i,j,s) }
+  | LPAREN LPAREN INDEX BVZEROEXT i=INT RPAREN s=sorted_term RPAREN
+    { Bvzeroext (i,s) }
+  | LPAREN LPAREN INDEX BVSIGNEXT i=INT RPAREN s=sorted_term RPAREN
+    { Bvsignext (i,s) }
+  | LPAREN LPAREN INDEX BVLROTATE i=INT RPAREN s=sorted_term RPAREN
+    { Bvlrotate (i,s) }
+  | LPAREN LPAREN INDEX BVRROTATE i=INT RPAREN s=sorted_term RPAREN
+    { Bvrrotate (i,s) }
+  | LPAREN LPAREN INDEX BVREPEAT i=INT RPAREN s=sorted_term RPAREN
+    { Bvrepeat (i,s) }
+  | LPAREN BVCOMP s1=sorted_term s2=sorted_term RPAREN
+    { Bvcomp (s1,s2) }
 ;
 
 formula:
@@ -78,6 +140,22 @@ formula:
   | LPAREN EQUALS s1=sorted_term s2=sorted_term RPAREN
     { Eq (s1, s2) }
   | IDENT { Var $1 }
+  | LPAREN BVULT s1=sorted_term s2=sorted_term RPAREN
+    { Bvule (s1, s2) }
+  | LPAREN BVULE s1=sorted_term s2=sorted_term RPAREN
+    { Bvule (s1, s2) }
+  | LPAREN BVUGT s1=sorted_term s2=sorted_term RPAREN
+    { Bvugt (s1, s2) }
+  | LPAREN BVUGE s1=sorted_term s2=sorted_term RPAREN
+    { Bvuge (s1, s2) }
+  | LPAREN BVSLT s1=sorted_term s2=sorted_term RPAREN
+    { Bvslt (s1, s2) }
+  | LPAREN BVSLE s1=sorted_term s2=sorted_term RPAREN
+    { Bvsle (s1, s2) }
+  | LPAREN BVSGT s1=sorted_term s2=sorted_term RPAREN
+    { Bvsgt (s1, s2) }
+  | LPAREN BVSGE s1=sorted_term s2=sorted_term RPAREN
+    { Bvsge (s1, s2) }
 ;
 
 assertion:

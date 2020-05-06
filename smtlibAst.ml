@@ -20,6 +20,35 @@ type sorted_term =
   | Appl of string * sorted_term list
   | Select of sorted_term * sorted_term
   | Store of sorted_term * sorted_term * sorted_term
+  | Bvbin of string
+  | Bvhex of string
+  | Bvand of sorted_term * sorted_term
+  | Bvor of sorted_term * sorted_term
+  | Bvxor of sorted_term * sorted_term
+  | Bvnand of sorted_term * sorted_term
+  | Bvnor of sorted_term * sorted_term
+  | Bvxnor of sorted_term * sorted_term
+  | Bvmul of sorted_term * sorted_term
+  | Bvadd of sorted_term * sorted_term
+  | Bvsub of sorted_term * sorted_term
+  | Bvudiv of sorted_term * sorted_term
+  | Bvurem of sorted_term * sorted_term
+  | Bvsdiv of sorted_term * sorted_term
+  | Bvsrem of sorted_term * sorted_term
+  | Bvsmod of sorted_term * sorted_term
+  | Bvshl of sorted_term * sorted_term
+  | Bvlshr of sorted_term * sorted_term
+  | Bvashr of sorted_term * sorted_term
+  | Bvconcat of sorted_term * sorted_term
+  | Bvneg of sorted_term
+  | Bvnot of sorted_term
+  | Bvextract of int * int * sorted_term
+  | Bvzeroext of int * sorted_term
+  | Bvsignext of int * sorted_term
+  | Bvlrotate of int * sorted_term
+  | Bvrrotate of int * sorted_term
+  | Bvrepeat of int * sorted_term
+  | Bvcomp of sorted_term * sorted_term
 and formula = 
   | True
   | False
@@ -30,6 +59,14 @@ and formula =
   | Impl of formula * formula
   | Eq of sorted_term * sorted_term
   | Xor of formula * formula
+  | Bvult of sorted_term * sorted_term 
+  | Bvule of sorted_term * sorted_term
+  | Bvugt of sorted_term * sorted_term
+  | Bvuge of sorted_term * sorted_term
+  | Bvslt of sorted_term * sorted_term
+  | Bvsle of sorted_term * sorted_term
+  | Bvsgt of sorted_term * sorted_term
+  | Bvsge of sorted_term * sorted_term
 
 type t = formula list
 
@@ -50,6 +87,47 @@ let rec to_string_sorted_term =
   | Select (x,y) -> concat_sp_sep_3 "select" (to_string_sorted_term x) (to_string_sorted_term y)
   | Store (x,y,z) -> concat_sp_sep_4 "store" (to_string_sorted_term x) (to_string_sorted_term y) 
                       (to_string_sorted_term z)
+  | Bvbin x -> x
+  | Bvhex x -> x
+  | Bvand (x,y) -> concat_sp_sep_3 "bvand" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvor (x,y) -> concat_sp_sep_3 "bvor" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvxor (x,y) -> concat_sp_sep_3 "bvxor" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvnand (x,y) -> concat_sp_sep_3 "bvnand" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvnor (x,y) -> concat_sp_sep_3 "bvnor" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvxnor (x,y) -> concat_sp_sep_3 "bvxnor" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvmul (x,y) -> concat_sp_sep_3 "bvmul" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvadd (x,y) -> concat_sp_sep_3 "bvadd" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvsub (x,y) -> concat_sp_sep_3 "bvsub" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvudiv (x,y) -> concat_sp_sep_3 "bvudiv" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvurem (x,y) -> concat_sp_sep_3 "bvurem" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvsdiv (x,y) -> concat_sp_sep_3 "bvsdiv" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvsrem (x,y) -> concat_sp_sep_3 "bvsrem" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvsmod (x,y) -> concat_sp_sep_3 "bvsmod" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvshl (x,y) -> concat_sp_sep_3 "bvshl" (to_string_sorted_term x) (to_string_sorted_term y)  
+  | Bvlshr (x,y) -> concat_sp_sep_3 "bvlshr" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvashr (x,y) -> concat_sp_sep_3 "bvashr" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvconcat (x,y) -> concat_sp_sep_3 "bvconcat" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvneg x -> concat_sp_sep_2 "bvneg" (to_string_sorted_term x)
+  | Bvnot x -> concat_sp_sep_2 "bvnot" (to_string_sorted_term x)
+  | Bvextract (i,j,x) -> concat_sp_sep_2 
+                          (concat_sp_sep_4 "_" "extract" (string_of_int i) (string_of_int j))
+                          (to_string_sorted_term x)
+  | Bvzeroext (i,x) -> concat_sp_sep_2 
+                          (concat_sp_sep_3 "_" "zero_extend" (string_of_int i))
+                          (to_string_sorted_term x)
+  | Bvsignext (i,x) -> concat_sp_sep_2 
+                          (concat_sp_sep_3 "_" "sign_extend" (string_of_int i))
+                          (to_string_sorted_term x)
+  | Bvlrotate (i,x) -> concat_sp_sep_2 
+                          (concat_sp_sep_3 "_" "rotate_left" (string_of_int i))
+                          (to_string_sorted_term x)
+  | Bvrrotate (i,x) -> concat_sp_sep_2 
+                          (concat_sp_sep_3 "_" "rotate_right" (string_of_int i))
+                          (to_string_sorted_term x)
+  | Bvrepeat (i,x) -> concat_sp_sep_2 
+                          (concat_sp_sep_3 "_" "repeat" (string_of_int i))
+                          (to_string_sorted_term x)
+  | Bvcomp (x,y) -> concat_sp_sep_3 "bvcomp" (to_string_sorted_term x) (to_string_sorted_term y)
 and to_string_form = 
   function
   | True -> "true"
@@ -61,6 +139,14 @@ and to_string_form =
   | Impl (x,y) -> concat_sp_sep_3 "=>" (to_string_form x) (to_string_form y)
   | Eq (x,y) -> concat_sp_sep_3 "=" (to_string_sorted_term x) (to_string_sorted_term y)
   | Xor (x,y) -> concat_sp_sep_3 "xor" (to_string_form x) (to_string_form y)
+  | Bvult (x,y) -> concat_sp_sep_3 "bvult" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvule (x,y) -> concat_sp_sep_3 "bvule" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvugt (x,y) -> concat_sp_sep_3 "bvugt" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvuge (x,y) -> concat_sp_sep_3 "bvuge" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvslt (x,y) -> concat_sp_sep_3 "bvslt" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvsle (x,y) -> concat_sp_sep_3 "bvsle" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvsgt (x,y) -> concat_sp_sep_3 "bvsgt" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvsge (x,y) -> concat_sp_sep_3 "bvsge" (to_string_sorted_term x) (to_string_sorted_term y)
 
 let rec to_string (l : t) = 
   let l_str = (List.map (to_string_form) (l)) in
