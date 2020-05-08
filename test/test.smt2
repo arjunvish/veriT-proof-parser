@@ -2,6 +2,8 @@
 (set-logic ALL_SUPPORTED)
 (declare-const p Bool)
 (declare-fun f (Bool) Bool)
-(assert (f (= p (not p))))
-(check-sat) ; returns 'unsat'
+(assert (= p false))
+(assert (= (f (and true true)) true))
+(assert (= (f true) false))
+(check-sat)
 (exit)

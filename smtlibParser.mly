@@ -41,23 +41,39 @@ sort:
 ;
 
 sorted_term:
-  | TRUE { BTrue }
-  | FALSE { BFalse }
+  | TRUE { STrue }
+  | FALSE { SFalse }
   | LPAREN NOT f=formula RPAREN 
-    { BNot f }
+    { SNot f }
   | LPAREN AND f1=formula f2=formula RPAREN
-    { BAnd (f1, f2) }
+    { SAnd (f1, f2) }
   | LPAREN OR f1=formula f2=formula RPAREN
-    { BOr (f1, f2) }
+    { SOr (f1, f2) }
   | LPAREN IMPL f1=formula f2=formula RPAREN
-    { BImpl (f1, f2) }
+    { SImpl (f1, f2) }
   | LPAREN XOR f1=formula f2=formula RPAREN
-    { BXor (f1, f2) }
+    { SXor (f1, f2) }
   | LPAREN EQUALS s1=sorted_term s2=sorted_term RPAREN
-    { BEq (s1, s2) } 
+    { SEq (s1, s2) } 
   | LPAREN ITE f=formula s1=sorted_term s2=sorted_term RPAREN
-    { Ite (f, s1, s2) }
-  | IDENT { TVar $1 }
+    { SIte (f, s1, s2) }
+  | LPAREN BVULT s1=sorted_term s2=sorted_term RPAREN
+    { SBvule (s1, s2) }
+  | LPAREN BVULE s1=sorted_term s2=sorted_term RPAREN
+    { SBvule (s1, s2) }
+  | LPAREN BVUGT s1=sorted_term s2=sorted_term RPAREN
+    { SBvugt (s1, s2) }
+  | LPAREN BVUGE s1=sorted_term s2=sorted_term RPAREN
+    { SBvuge (s1, s2) }
+  | LPAREN BVSLT s1=sorted_term s2=sorted_term RPAREN
+    { SBvslt (s1, s2) }
+  | LPAREN BVSLE s1=sorted_term s2=sorted_term RPAREN
+    { SBvsle (s1, s2) }
+  | LPAREN BVSGT s1=sorted_term s2=sorted_term RPAREN
+    { SBvsgt (s1, s2) }
+  | LPAREN BVSGE s1=sorted_term s2=sorted_term RPAREN
+    { SBvsge (s1, s2) }
+  | IDENT { SVar $1 }
   | LPAREN IDENT l=list(sorted_term) RPAREN
     { Appl ($2, l) }
   | LPAREN SELECT s1=sorted_term s2=sorted_term RPAREN
@@ -139,6 +155,8 @@ formula:
     { Xor (f1, f2) }
   | LPAREN EQUALS s1=sorted_term s2=sorted_term RPAREN
     { Eq (s1, s2) }
+  | LPAREN ITE f1=formula f2=formula f3=formula RPAREN
+    { Ite(f1, f2, f3) }
   | IDENT { Var $1 }
   | LPAREN BVULT s1=sorted_term s2=sorted_term RPAREN
     { Bvule (s1, s2) }

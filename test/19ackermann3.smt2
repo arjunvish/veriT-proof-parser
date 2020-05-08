@@ -14,7 +14,9 @@
 (declare-fun b () abv)
 (declare-fun c () abv)
 
-(assert (not (= (select a (select b (select c v0))) (select a (select b (select c v1))))))
+(assert (not (= 
+            (select a (select b (select c v0))) 
+            (select a (select b (select c v1))))))
 
 (assert (= v0 v1))
 
