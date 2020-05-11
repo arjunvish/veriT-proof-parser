@@ -2,3 +2,4 @@
 - decimal BVs, ex: (_ bv255 8) for binary 255 in 8 bits
 - set-infos
 - Check entire bv signature with all the extensions
+- When a function application returns a Boolean, the LFSC file treats that term as a formula by applying p_app to it. We don't handle these cases right now because these might not be relevant for the Galois case.
