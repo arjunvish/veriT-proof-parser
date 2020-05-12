@@ -1,9 +1,11 @@
-;(set-option :print-success false)
 (set-logic ALL_SUPPORTED)
-(declare-const p Bool)
-(declare-fun f (Bool) Bool)
-(assert (= p false))
-(assert (= (f (and true true)) true))
-(assert (= (f true) false))
+
+(declare-fun a () (_ BitVec 4))
+(declare-fun b () (_ BitVec 4))
+
+
+(assert (= a 
+           (let ((x #b0000) (y #b1111)) (bvand x y))))
+(assert (= b #b1111))
+(assert (= a b))
 (check-sat)
-(exit)

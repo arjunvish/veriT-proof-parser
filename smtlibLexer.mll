@@ -88,8 +88,11 @@
       val declareconst : t
       val declarefun : t
       val declaresort : t
+      val declarefun : t
+      val definefun : t
       val checksat : t
       val exit : t
+      val f_let : t
       val f_assert : t
       val f_true : t
       val f_false : t
@@ -196,8 +199,10 @@ rule main buf = parse
   | "declare-const" { Token.declareconst }
   | "declare-fun" { Token.declarefun }
   | "declare-sort" { Token.declaresort }
+  | "define-fun" { Token.definefun }
   | "check-sat" { Token.checksat }
   | "exit" { Token.exit }
+  | "let" { Token.f_let }
   | "assert" { Token.f_assert }
   | "true" { Token.f_true }
   | "false" { Token.f_false }
@@ -441,8 +446,10 @@ and scan_block_comment buf locs = parse
         let declareconst = DECLARECONST
         let declarefun = DECLAREFUN
         let declaresort = DECLARESORT
+        let definefun = DEFINEFUN
         let checksat = CHECKSAT
         let exit = EXIT
+        let f_let = LET
         let f_assert = ASSERT
         let f_true = TRUE
         let f_false = FALSE

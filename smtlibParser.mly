@@ -5,6 +5,72 @@ open Lexing
 open Format
 open SmtlibAst
 
+(* Hashtable to store function definitions *)
+let fun_map = Hashtbl.create 10
+
+(* Traverse the term "body" and replace all variable occurrences of
+   x by y*)
+let rec traverse_and_replace (x : sorted_term) (y : sorted_term) (body : sorted_term) : sorted_term = 
+match body with
+  | STrue | SFalse | SNot _ | SAnd (_,_) | SOr (_,_)
+  | SImpl (_,_) | SXor (_,_) | Bvbin _ | Bvhex _ | SError _ -> body
+  | SVar a -> (match x,y with 
+              | SVar m, SVar n when (a = m) -> y
+              | SVar _, SVar _ -> SVar a
+              | _ -> SError "Non-variables involved in actual/formal parameters of define-fun")
+  | SEq (a,b) -> SEq ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | SIte (f,a,b) -> SIte (f, (traverse_and_replace x y a), (traverse_and_replace x y b))
+  | SBvult (a,b) -> SBvult ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | SBvule (a,b) -> SBvule ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | SBvugt (a,b) -> SBvugt ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | SBvuge (a,b) -> SBvuge ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | SBvslt (a,b) -> SBvslt ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | SBvsle (a,b) -> SBvsle ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | SBvsgt (a,b) -> SBvsgt ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | SBvsge (a,b) -> SBvsge ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Appl (s,args) -> let new_args = (List.map (traverse_and_replace x y) args) in Appl (s,new_args)
+  | Select (a,b) -> Select ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Store (a,b,c) -> Store ((traverse_and_replace x y a), (traverse_and_replace x y b), (traverse_and_replace x y c))
+  | Bvand (a,b) -> Bvand ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvor (a,b) -> Bvor ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvxor (a,b) -> Bvxor ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvnand (a,b) -> Bvnand ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvnor (a,b) -> Bvnor ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvxnor (a,b) -> Bvxnor ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvmul (a,b) -> Bvmul ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvadd (a,b) -> Bvadd ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvsub (a,b) -> Bvsub ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvudiv (a,b) -> Bvudiv ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvurem (a,b) -> Bvurem ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvsdiv (a,b) -> Bvsdiv ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvsrem (a,b) -> Bvsrem ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvsmod (a,b) -> Bvsmod ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvshl (a,b) -> Bvshl ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvlshr (a,b) -> Bvlshr ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvashr (a,b) -> Bvashr ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvconcat (a,b) -> Bvconcat ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvneg a -> Bvneg (traverse_and_replace x y a)
+  | Bvnot a -> Bvnot (traverse_and_replace x y a)
+  | Bvextract (i,j,a) -> Bvextract (i,j, (traverse_and_replace x y a))
+  | Bvzeroext (i,a) -> Bvzeroext (i, (traverse_and_replace x y a))
+  | Bvsignext (i,a) -> Bvsignext (i, (traverse_and_replace x y a))
+  | Bvlrotate (i,a) -> Bvlrotate (i, (traverse_and_replace x y a))
+  | Bvrrotate (i,a) -> Bvrrotate (i, (traverse_and_replace x y a))
+  | Bvrepeat (i,a) -> Bvrepeat (i, (traverse_and_replace x y a))
+  | Bvcomp (a,b) -> Bvcomp ((traverse_and_replace x y a), (traverse_and_replace x y b))
+
+(* For each of the variable pairs (x,y) in arg pairs, 
+   replace x by y in body *)  
+let rec traverse_and_replace_all (arg_pairs : (sorted_term * sorted_term) list) (body : sorted_term) : sorted_term =
+match arg_pairs with 
+  | (x,y) :: t -> traverse_and_replace_all t (traverse_and_replace x y body)
+  | [] -> body
+
+(* Replace all formal_args by actual_args in the term body *)
+let replace (formal_args : sorted_term list) (actual_args : sorted_term list) (body : sorted_term) : sorted_term=
+  let arg_pairs = List.combine formal_args actual_args in
+  traverse_and_replace_all arg_pairs body
+
 let concat_sp_sep_1 a = "("^a^")"
 let concat_sp_sep_2 a b = "("^a^" "^b^")"
 let concat_sp_sep_3 a b c = "("^a^" "^b^" "^c^")"
@@ -20,7 +86,7 @@ let concat_sp_sep_8 a b c d e f g h = "("^a^" "^b^" "^c^" "^d^" "^e^" "^f^" "^g^
 %token <string> BVBIN
 %token <string> BVHEX
 %token LPAREN RPAREN COLON EOF SETLOGIC TRUE FALSE NOT AND OR IMPL XOR EQUALS ITE BOOL HASH_SEMI
-%token DECLARECONST DECLAREFUN DECLARESORT CHECKSAT EXIT ASSERT ARRAY SELECT STORE
+%token DECLARECONST DECLAREFUN DECLARESORT DEFINEFUN CHECKSAT EXIT LET ASSERT ARRAY SELECT STORE
 %token BITVEC INDEX BVAND BVOR BVXOR BVNAND BVNOR BVXNOR BVMUL BVADD BVSUB BVUDIV BVUREM
 %token BVSDIV BVSREM BVSMOD BVSHL BVLSHR BVASHR BVCONCAT BVNEG BVNOT BVLROTATE BVRROTATE BVCOMP
 %token BVEXTRACT BVZEROEXT BVSIGNEXT BVREPEAT BVULT BVULE BVUGT BVUGE BVSLT BVSLE BVSGT BVSGE
@@ -40,6 +106,16 @@ sort:
     { (concat_sp_sep_3 "_" "BitVec" (string_of_int $4)) }
 ;
 
+letarg:
+  | LPAREN IDENT sorted_term RPAREN
+    { (SVar $2, $3) }
+;
+
+letargs:
+  | LPAREN l=list(letarg) RPAREN
+    { l }
+;
+
 sorted_term:
   | TRUE { STrue }
   | FALSE { SFalse }
@@ -57,6 +133,8 @@ sorted_term:
     { SEq (s1, s2) } 
   | LPAREN ITE f=formula s1=sorted_term s2=sorted_term RPAREN
     { SIte (f, s1, s2) }
+  | LPAREN LET letargs sorted_term RPAREN
+    { (traverse_and_replace_all $3 $4) }
   | LPAREN BVULT s1=sorted_term s2=sorted_term RPAREN
     { SBvule (s1, s2) }
   | LPAREN BVULE s1=sorted_term s2=sorted_term RPAREN
@@ -74,8 +152,10 @@ sorted_term:
   | LPAREN BVSGE s1=sorted_term s2=sorted_term RPAREN
     { SBvsge (s1, s2) }
   | IDENT { SVar $1 }
-  | LPAREN IDENT l=list(sorted_term) RPAREN
-    { Appl ($2, l) }
+  | LPAREN IDENT actual_args=list(sorted_term) RPAREN
+    { match (Hashtbl.find fun_map $2) with
+      | (formal_args, body) -> replace formal_args actual_args body
+      | exception Not_found -> Appl ($2, actual_args) }
   | LPAREN SELECT s1=sorted_term s2=sorted_term RPAREN
     { Select (s1, s2) }
   | LPAREN STORE s1=sorted_term s2=sorted_term s3=sorted_term RPAREN
@@ -187,6 +267,16 @@ args:
       (concat_sp_sep_1 s)}
 ;
 
+sortedarg:
+  | LPAREN IDENT sort RPAREN
+    { SVar $2 }
+;
+
+defargs:
+  | LPAREN l=list(sortedarg) RPAREN
+    { l }
+;
+
 command:
   | LPAREN SETLOGIC IDENT RPAREN 
     { (concat_sp_sep_2 "set-logic" $3) }
@@ -196,6 +286,9 @@ command:
     { (concat_sp_sep_4 "declare-fun" $3 $4 $5) }
   | LPAREN DECLARESORT IDENT INT RPAREN
     { (concat_sp_sep_3 "declare-sort" $3 (string_of_int $4)) }
+  | LPAREN DEFINEFUN IDENT defargs sort sorted_term RPAREN
+    { let _ = (Hashtbl.add fun_map $3 ($4,$6)) in 
+      "" }
   | LPAREN CHECKSAT RPAREN
     { (concat_sp_sep_1 "checksat") }
   | LPAREN EXIT RPAREN
