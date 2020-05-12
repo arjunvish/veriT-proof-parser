@@ -8,6 +8,70 @@ open SmtlibAst
 (* Hashtable to store function definitions *)
 let fun_map = Hashtbl.create 10
 
+
+(* Traverse the term "body" and replace all variable occurrences of
+   x by y*)
+let rec traverse_and_replace_let (x : sorted_term) (y : sorted_term) (body : sorted_term) : sorted_term = 
+match body with
+  | True | False | Bvbin _ | Bvhex _ | Error _ -> body
+  | Var a -> (match x with 
+              | Var m when (a = m) -> y
+              | Var _ -> x
+              | _ -> Error "Non-variables involved in formal parameters of let")
+  | Not a -> Not (traverse_and_replace_let x y a)
+  | And (a,b) -> And ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Or (a,b) -> Or ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Impl (a,b) -> Impl ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Xor (a,b) -> Xor ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))      
+  | Eq (a,b) -> Eq ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Ite (f,a,b) -> Ite (f, (traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvult (a,b) -> Bvult ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvule (a,b) -> Bvule ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvugt (a,b) -> Bvugt ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvuge (a,b) -> Bvuge ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvslt (a,b) -> Bvslt ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvsle (a,b) -> Bvsle ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvsgt (a,b) -> Bvsgt ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvsge (a,b) -> Bvsge ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Appl (s,args) -> let new_args = (List.map (traverse_and_replace_let x y) args) in Appl (s,new_args)
+  | Select (a,b) -> Select ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Store (a,b,c) -> Store ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b), (traverse_and_replace_let x y c))
+  | Bvand (a,b) -> Bvand ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvor (a,b) -> Bvor ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvxor (a,b) -> Bvxor ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvnand (a,b) -> Bvnand ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvnor (a,b) -> Bvnor ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvxnor (a,b) -> Bvxnor ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvmul (a,b) -> Bvmul ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvadd (a,b) -> Bvadd ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvsub (a,b) -> Bvsub ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvudiv (a,b) -> Bvudiv ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvurem (a,b) -> Bvurem ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvsdiv (a,b) -> Bvsdiv ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvsrem (a,b) -> Bvsrem ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvsmod (a,b) -> Bvsmod ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvshl (a,b) -> Bvshl ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvlshr (a,b) -> Bvlshr ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvashr (a,b) -> Bvashr ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvconcat (a,b) -> Bvconcat ((traverse_and_replace_let x y a), (traverse_and_replace_let x y b))
+  | Bvneg a -> Bvneg (traverse_and_replace_let x y a)
+  | Bvnot a -> Bvnot (traverse_and_replace_let x y a)
+  | Bvextract (i,j,a) -> Bvextract (i,j, (traverse_and_replace_let x y a))
+  | Bvzeroext (i,a) -> Bvzeroext (i, (traverse_and_replace_let x y a))
+  | Bvsignext (i,a) -> Bvsignext (i, (traverse_and_replace_let x y a))
+  | Bvlrotate (i,a) -> Bvlrotate (i, (traverse_and_replace_let x y a))
+  | Bvrrotate (i,a) -> Bvrrotate (i, (traverse_and_replace_let x y a))
+  | Bvrepeat (i,a) -> Bvrepeat (i, (traverse_and_replace_let x y a))
+  | Bvcomp (a,b) -> Bvcomp ((traverse_and_replace_let x y a)  , (traverse_and_replace_let x y b))
+
+(* For each of the variable pairs (x,y) in arg pairs, 
+   replace x by y in body *)  
+let rec traverse_and_replace_all_let (arg_pairs : (sorted_term * sorted_term) list) (body : sorted_term) : sorted_term =
+match arg_pairs with 
+  | (x,y) :: t -> traverse_and_replace_all_let t (traverse_and_replace_let x y body)
+  | [] -> body
+
+
 (* Traverse the term "body" and replace all variable occurrences of
    x by y*)
 let rec traverse_and_replace (x : sorted_term) (y : sorted_term) (body : sorted_term) : sorted_term = 
@@ -138,7 +202,7 @@ sorted_term:
   | LPAREN ITE s1=sorted_term s2=sorted_term s3=sorted_term RPAREN
     { Ite (s1, s2, s3) }
   | LPAREN LET letargs sorted_term RPAREN
-    { (traverse_and_replace_all $3 $4) }
+    { (traverse_and_replace_all_let $3 $4) }
   | LPAREN BVULT s1=sorted_term s2=sorted_term RPAREN
     { Bvule (s1, s2) }
   | LPAREN BVULE s1=sorted_term s2=sorted_term RPAREN
