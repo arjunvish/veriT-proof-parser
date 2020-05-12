@@ -123,20 +123,20 @@ letargs:
 sorted_term:
   | TRUE { True }
   | FALSE { False }
-  | LPAREN NOT f=formula RPAREN 
-    { Not f }
-  | LPAREN AND f1=formula f2=formula RPAREN
-    { And (f1, f2) }
-  | LPAREN OR f1=formula f2=formula RPAREN
-    { Or (f1, f2) }
-  | LPAREN IMPL f1=formula f2=formula RPAREN
-    { Impl (f1, f2) }
-  | LPAREN XOR f1=formula f2=formula RPAREN
-    { Xor (f1, f2) }
+  | LPAREN NOT s=sorted_term RPAREN 
+    { Not s }
+  | LPAREN AND s1=sorted_term s2=sorted_term RPAREN
+    { And (s1, s2) }
+  | LPAREN OR s1=sorted_term s2=sorted_term RPAREN
+    { Or (s1, s2) }
+  | LPAREN IMPL s1=sorted_term s2=sorted_term RPAREN
+    { Impl (s1, s2) }
+  | LPAREN XOR s1=sorted_term s2=sorted_term RPAREN
+    { Xor (s1, s2) }
   | LPAREN EQUALS s1=sorted_term s2=sorted_term RPAREN
     { Eq (s1, s2) } 
-  | LPAREN ITE f=formula s1=sorted_term s2=sorted_term RPAREN
-    { Ite (f, s1, s2) }
+  | LPAREN ITE s1=sorted_term s2=sorted_term s3=sorted_term RPAREN
+    { Ite (s1, s2, s3) }
   | LPAREN LET letargs sorted_term RPAREN
     { (traverse_and_replace_all $3 $4) }
   | LPAREN BVULT s1=sorted_term s2=sorted_term RPAREN
@@ -224,44 +224,8 @@ sorted_term:
     { Bvcomp (s1,s2) }
 ;
 
-formula:
-  | TRUE { True }
-  | FALSE { False }
-  | LPAREN NOT f=formula RPAREN 
-    { Not f }
-  | LPAREN AND f1=formula f2=formula RPAREN
-    { And (f1, f2) }
-  | LPAREN OR f1=formula f2=formula RPAREN
-    { Or (f1, f2) }
-  | LPAREN IMPL f1=formula f2=formula RPAREN
-    { Impl (f1, f2) }
-  | LPAREN XOR f1=formula f2=formula RPAREN
-    { Xor (f1, f2) }
-  | LPAREN EQUALS s1=sorted_term s2=sorted_term RPAREN
-    { Eq (s1, s2) }
-  | LPAREN ITE f1=formula f2=formula f3=formula RPAREN
-    { Ite(f1, f2, f3) }
-  | IDENT { Var $1 }
-  | LPAREN BVULT s1=sorted_term s2=sorted_term RPAREN
-    { Bvule (s1, s2) }
-  | LPAREN BVULE s1=sorted_term s2=sorted_term RPAREN
-    { Bvule (s1, s2) }
-  | LPAREN BVUGT s1=sorted_term s2=sorted_term RPAREN
-    { Bvugt (s1, s2) }
-  | LPAREN BVUGE s1=sorted_term s2=sorted_term RPAREN
-    { Bvuge (s1, s2) }
-  | LPAREN BVSLT s1=sorted_term s2=sorted_term RPAREN
-    { Bvslt (s1, s2) }
-  | LPAREN BVSLE s1=sorted_term s2=sorted_term RPAREN
-    { Bvsle (s1, s2) }
-  | LPAREN BVSGT s1=sorted_term s2=sorted_term RPAREN
-    { Bvsgt (s1, s2) }
-  | LPAREN BVSGE s1=sorted_term s2=sorted_term RPAREN
-    { Bvsge (s1, s2) }
-;
-
 assertion:
-  | LPAREN ASSERT formula RPAREN
+  | LPAREN ASSERT sorted_term RPAREN
     { (concat_sp_sep_2 "assert" (to_string_sorted_term $3)) }
 ;
 
