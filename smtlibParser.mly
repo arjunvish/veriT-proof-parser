@@ -12,22 +12,26 @@ let fun_map = Hashtbl.create 10
    x by y*)
 let rec traverse_and_replace (x : sorted_term) (y : sorted_term) (body : sorted_term) : sorted_term = 
 match body with
-  | STrue | SFalse | SNot _ | SAnd (_,_) | SOr (_,_)
-  | SImpl (_,_) | SXor (_,_) | Bvbin _ | Bvhex _ | SError _ -> body
-  | SVar a -> (match x,y with 
-              | SVar m, SVar n when (a = m) -> y
-              | SVar _, SVar _ -> SVar a
-              | _ -> SError "Non-variables involved in actual/formal parameters of define-fun")
-  | SEq (a,b) -> SEq ((traverse_and_replace x y a), (traverse_and_replace x y b))
-  | SIte (f,a,b) -> SIte (f, (traverse_and_replace x y a), (traverse_and_replace x y b))
-  | SBvult (a,b) -> SBvult ((traverse_and_replace x y a), (traverse_and_replace x y b))
-  | SBvule (a,b) -> SBvule ((traverse_and_replace x y a), (traverse_and_replace x y b))
-  | SBvugt (a,b) -> SBvugt ((traverse_and_replace x y a), (traverse_and_replace x y b))
-  | SBvuge (a,b) -> SBvuge ((traverse_and_replace x y a), (traverse_and_replace x y b))
-  | SBvslt (a,b) -> SBvslt ((traverse_and_replace x y a), (traverse_and_replace x y b))
-  | SBvsle (a,b) -> SBvsle ((traverse_and_replace x y a), (traverse_and_replace x y b))
-  | SBvsgt (a,b) -> SBvsgt ((traverse_and_replace x y a), (traverse_and_replace x y b))
-  | SBvsge (a,b) -> SBvsge ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | True | False | Bvbin _ | Bvhex _ | Error _ -> body
+  | Var a -> (match x,y with 
+              | Var m, Var n when (a = m) -> y
+              | Var _, Var _ -> Var a
+              | _ -> Error "Non-variables involved in actual/formal parameters of define-fun")
+  | Not a -> Not (traverse_and_replace x y a)
+  | And (a,b) -> And ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Or (a,b) -> Or ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Impl (a,b) -> Impl ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Xor (a,b) -> Xor ((traverse_and_replace x y a), (traverse_and_replace x y b))      
+  | Eq (a,b) -> Eq ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Ite (f,a,b) -> Ite (f, (traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvult (a,b) -> Bvult ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvule (a,b) -> Bvule ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvugt (a,b) -> Bvugt ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvuge (a,b) -> Bvuge ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvslt (a,b) -> Bvslt ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvsle (a,b) -> Bvsle ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvsgt (a,b) -> Bvsgt ((traverse_and_replace x y a), (traverse_and_replace x y b))
+  | Bvsge (a,b) -> Bvsge ((traverse_and_replace x y a), (traverse_and_replace x y b))
   | Appl (s,args) -> let new_args = (List.map (traverse_and_replace x y) args) in Appl (s,new_args)
   | Select (a,b) -> Select ((traverse_and_replace x y a), (traverse_and_replace x y b))
   | Store (a,b,c) -> Store ((traverse_and_replace x y a), (traverse_and_replace x y b), (traverse_and_replace x y c))
@@ -108,7 +112,7 @@ sort:
 
 letarg:
   | LPAREN IDENT sorted_term RPAREN
-    { (SVar $2, $3) }
+    { (Var $2, $3) }
 ;
 
 letargs:
@@ -117,41 +121,41 @@ letargs:
 ;
 
 sorted_term:
-  | TRUE { STrue }
-  | FALSE { SFalse }
+  | TRUE { True }
+  | FALSE { False }
   | LPAREN NOT f=formula RPAREN 
-    { SNot f }
+    { Not f }
   | LPAREN AND f1=formula f2=formula RPAREN
-    { SAnd (f1, f2) }
+    { And (f1, f2) }
   | LPAREN OR f1=formula f2=formula RPAREN
-    { SOr (f1, f2) }
+    { Or (f1, f2) }
   | LPAREN IMPL f1=formula f2=formula RPAREN
-    { SImpl (f1, f2) }
+    { Impl (f1, f2) }
   | LPAREN XOR f1=formula f2=formula RPAREN
-    { SXor (f1, f2) }
+    { Xor (f1, f2) }
   | LPAREN EQUALS s1=sorted_term s2=sorted_term RPAREN
-    { SEq (s1, s2) } 
+    { Eq (s1, s2) } 
   | LPAREN ITE f=formula s1=sorted_term s2=sorted_term RPAREN
-    { SIte (f, s1, s2) }
+    { Ite (f, s1, s2) }
   | LPAREN LET letargs sorted_term RPAREN
     { (traverse_and_replace_all $3 $4) }
   | LPAREN BVULT s1=sorted_term s2=sorted_term RPAREN
-    { SBvule (s1, s2) }
+    { Bvule (s1, s2) }
   | LPAREN BVULE s1=sorted_term s2=sorted_term RPAREN
-    { SBvule (s1, s2) }
+    { Bvule (s1, s2) }
   | LPAREN BVUGT s1=sorted_term s2=sorted_term RPAREN
-    { SBvugt (s1, s2) }
+    { Bvugt (s1, s2) }
   | LPAREN BVUGE s1=sorted_term s2=sorted_term RPAREN
-    { SBvuge (s1, s2) }
+    { Bvuge (s1, s2) }
   | LPAREN BVSLT s1=sorted_term s2=sorted_term RPAREN
-    { SBvslt (s1, s2) }
+    { Bvslt (s1, s2) }
   | LPAREN BVSLE s1=sorted_term s2=sorted_term RPAREN
-    { SBvsle (s1, s2) }
+    { Bvsle (s1, s2) }
   | LPAREN BVSGT s1=sorted_term s2=sorted_term RPAREN
-    { SBvsgt (s1, s2) }
+    { Bvsgt (s1, s2) }
   | LPAREN BVSGE s1=sorted_term s2=sorted_term RPAREN
-    { SBvsge (s1, s2) }
-  | IDENT { SVar $1 }
+    { Bvsge (s1, s2) }
+  | IDENT { Var $1 }
   | LPAREN IDENT actual_args=list(sorted_term) RPAREN
     { match (Hashtbl.find fun_map $2) with
       | (formal_args, body) -> replace formal_args actual_args body
@@ -258,7 +262,7 @@ formula:
 
 assertion:
   | LPAREN ASSERT formula RPAREN
-    { (concat_sp_sep_2 "assert" (to_string_form $3)) }
+    { (concat_sp_sep_2 "assert" (to_string_sorted_term $3)) }
 ;
 
 args:
@@ -269,7 +273,7 @@ args:
 
 sortedarg:
   | LPAREN IDENT sort RPAREN
-    { SVar $2 }
+    { Var $2 }
 ;
 
 defargs:

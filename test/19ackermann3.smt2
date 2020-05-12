@@ -5,14 +5,15 @@
 ;(set-info :category "crafted")
 ;(set-info :status unsat)
 
+; No support for defin-sort yet
 (define-sort bv () (_ BitVec 4))
-;(define-sort abv () (Array bv bv))
+(define-sort abv () (Array bv bv))
 
-;(declare-fun v0 () (_ BitVec 4))
-;(declare-fun v1 () (_ BitVec 4))
-;(declare-fun a () abv)
-;(declare-fun b () abv)
-;(declare-fun c () abv)
+(declare-fun v0 () (_ BitVec 4))
+(declare-fun v1 () (_ BitVec 4))
+(declare-fun a () abv)
+(declare-fun b () abv)
+(declare-fun c () abv)
 
 (assert (not (= 
             (select a (select b (select c v0))) 

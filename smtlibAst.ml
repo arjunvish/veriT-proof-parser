@@ -7,24 +7,24 @@ let concat_sp_sep_7 a b c d e f g = "("^a^" "^b^" "^c^" "^d^" "^e^" "^f^" "^g^")
 let concat_sp_sep_8 a b c d e f g h = "("^a^" "^b^" "^c^" "^d^" "^e^" "^f^" "^g^" "^h^")"
 
 type sorted_term = 
-  | SVar of string
-  | STrue
-  | SFalse
-  | SNot of formula
-  | SAnd of formula * formula
-  | SOr of formula * formula
-  | SImpl of formula * formula
-  | SXor of formula * formula
-  | SEq of sorted_term * sorted_term
-  | SIte of formula * sorted_term * sorted_term
-  | SBvult of sorted_term * sorted_term 
-  | SBvule of sorted_term * sorted_term
-  | SBvugt of sorted_term * sorted_term
-  | SBvuge of sorted_term * sorted_term
-  | SBvslt of sorted_term * sorted_term
-  | SBvsle of sorted_term * sorted_term
-  | SBvsgt of sorted_term * sorted_term
-  | SBvsge of sorted_term * sorted_term
+  | Var of string
+  | True
+  | False
+  | Not of sorted_term
+  | And of sorted_term * sorted_term
+  | Or of sorted_term * sorted_term
+  | Impl of sorted_term * sorted_term
+  | Xor of sorted_term * sorted_term
+  | Eq of sorted_term * sorted_term
+  | Ite of sorted_term * sorted_term * sorted_term
+  | Bvult of sorted_term * sorted_term 
+  | Bvule of sorted_term * sorted_term
+  | Bvugt of sorted_term * sorted_term
+  | Bvuge of sorted_term * sorted_term
+  | Bvslt of sorted_term * sorted_term
+  | Bvsle of sorted_term * sorted_term
+  | Bvsgt of sorted_term * sorted_term
+  | Bvsge of sorted_term * sorted_term
   | Appl of string * sorted_term list
   | Select of sorted_term * sorted_term
   | Store of sorted_term * sorted_term * sorted_term
@@ -57,51 +57,31 @@ type sorted_term =
   | Bvrrotate of int * sorted_term
   | Bvrepeat of int * sorted_term
   | Bvcomp of sorted_term * sorted_term
-  | SError of string
-and formula = 
-  | Var of string
-  | True
-  | False
-  | Not of formula
-  | And of formula * formula
-  | Or of formula * formula
-  | Impl of formula * formula
-  | Xor of formula * formula
-  | Eq of sorted_term * sorted_term
-  | Ite of formula * formula * formula
-  | Bvult of sorted_term * sorted_term 
-  | Bvule of sorted_term * sorted_term
-  | Bvugt of sorted_term * sorted_term
-  | Bvuge of sorted_term * sorted_term
-  | Bvslt of sorted_term * sorted_term
-  | Bvsle of sorted_term * sorted_term
-  | Bvsgt of sorted_term * sorted_term
-  | Bvsge of sorted_term * sorted_term
   | Error of string
 
-type t = formula list
+type t = sorted_term list
 
 let rec to_string_sorted_term =
   function
-  | SVar v -> v
-  | STrue -> "true"
-  | SFalse -> "false"
-  | SNot f -> concat_sp_sep_2 "not" (to_string_form f)
-  | SAnd (x,y) -> concat_sp_sep_3 "and" (to_string_form x) (to_string_form y)
-  | SOr (x,y) -> concat_sp_sep_3 "or" (to_string_form x) (to_string_form y)
-  | SImpl (x,y) -> concat_sp_sep_3 "=>" (to_string_form x) (to_string_form y)
-  | SXor (x,y) -> concat_sp_sep_3 "xor" (to_string_form x) (to_string_form y)
-  | SEq (x,y) -> concat_sp_sep_3 "=" (to_string_sorted_term x) (to_string_sorted_term y)
-  | SIte (x,y,z) -> concat_sp_sep_4 "ite" (to_string_form x) (to_string_sorted_term y) 
+  | Var v -> v
+  | True -> "true"
+  | False -> "false"
+  | Not f -> concat_sp_sep_2 "not" (to_string_sorted_term f)
+  | And (x,y) -> concat_sp_sep_3 "and" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Or (x,y) -> concat_sp_sep_3 "or" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Impl (x,y) -> concat_sp_sep_3 "=>" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Xor (x,y) -> concat_sp_sep_3 "xor" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Eq (x,y) -> concat_sp_sep_3 "=" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Ite (x,y,z) -> concat_sp_sep_4 "ite" (to_string_sorted_term x) (to_string_sorted_term y) 
                     (to_string_sorted_term z)
-  | SBvult (x,y) -> concat_sp_sep_3 "bvult" (to_string_sorted_term x) (to_string_sorted_term y)
-  | SBvule (x,y) -> concat_sp_sep_3 "bvule" (to_string_sorted_term x) (to_string_sorted_term y)
-  | SBvugt (x,y) -> concat_sp_sep_3 "bvugt" (to_string_sorted_term x) (to_string_sorted_term y)
-  | SBvuge (x,y) -> concat_sp_sep_3 "bvuge" (to_string_sorted_term x) (to_string_sorted_term y)
-  | SBvslt (x,y) -> concat_sp_sep_3 "bvslt" (to_string_sorted_term x) (to_string_sorted_term y)
-  | SBvsle (x,y) -> concat_sp_sep_3 "bvsle" (to_string_sorted_term x) (to_string_sorted_term y)
-  | SBvsgt (x,y) -> concat_sp_sep_3 "bvsgt" (to_string_sorted_term x) (to_string_sorted_term y)
-  | SBvsge (x,y) -> concat_sp_sep_3 "bvsge" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvult (x,y) -> concat_sp_sep_3 "bvult" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvule (x,y) -> concat_sp_sep_3 "bvule" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvugt (x,y) -> concat_sp_sep_3 "bvugt" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvuge (x,y) -> concat_sp_sep_3 "bvuge" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvslt (x,y) -> concat_sp_sep_3 "bvslt" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvsle (x,y) -> concat_sp_sep_3 "bvsle" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvsgt (x,y) -> concat_sp_sep_3 "bvsgt" (to_string_sorted_term x) (to_string_sorted_term y)
+  | Bvsge (x,y) -> concat_sp_sep_3 "bvsge" (to_string_sorted_term x) (to_string_sorted_term y)
   | Appl (f, args) -> "("^f^" "^(String.concat " " (List.map to_string_sorted_term args))^")"
   | Select (x,y) -> concat_sp_sep_3 "select" (to_string_sorted_term x) (to_string_sorted_term y)
   | Store (x,y,z) -> concat_sp_sep_4 "store" (to_string_sorted_term x) (to_string_sorted_term y) 
@@ -147,30 +127,8 @@ let rec to_string_sorted_term =
                           (concat_sp_sep_3 "_" "repeat" (string_of_int i))
                           (to_string_sorted_term x)
   | Bvcomp (x,y) -> concat_sp_sep_3 "bvcomp" (to_string_sorted_term x) (to_string_sorted_term y)
-  | SError x -> ("Error: "^x)
-and to_string_form = 
-  function
-  | Var v -> v
-  | True -> "true"
-  | False -> "false"
-  | Not f -> concat_sp_sep_2 "not" (to_string_form f)
-  | And (x,y) -> concat_sp_sep_3 "and" (to_string_form x) (to_string_form y)
-  | Or (x,y) -> concat_sp_sep_3 "or" (to_string_form x) (to_string_form y)
-  | Impl (x,y) -> concat_sp_sep_3 "=>" (to_string_form x) (to_string_form y)
-  | Xor (x,y) -> concat_sp_sep_3 "xor" (to_string_form x) (to_string_form y)
-  | Eq (x,y) -> concat_sp_sep_3 "=" (to_string_sorted_term x) (to_string_sorted_term y)
-  | Ite (x,y,z) -> concat_sp_sep_4 "ite" (to_string_form x) (to_string_form y) 
-                    (to_string_form z)
-  | Bvult (x,y) -> concat_sp_sep_3 "bvult" (to_string_sorted_term x) (to_string_sorted_term y)
-  | Bvule (x,y) -> concat_sp_sep_3 "bvule" (to_string_sorted_term x) (to_string_sorted_term y)
-  | Bvugt (x,y) -> concat_sp_sep_3 "bvugt" (to_string_sorted_term x) (to_string_sorted_term y)
-  | Bvuge (x,y) -> concat_sp_sep_3 "bvuge" (to_string_sorted_term x) (to_string_sorted_term y)
-  | Bvslt (x,y) -> concat_sp_sep_3 "bvslt" (to_string_sorted_term x) (to_string_sorted_term y)
-  | Bvsle (x,y) -> concat_sp_sep_3 "bvsle" (to_string_sorted_term x) (to_string_sorted_term y)
-  | Bvsgt (x,y) -> concat_sp_sep_3 "bvsgt" (to_string_sorted_term x) (to_string_sorted_term y)
-  | Bvsge (x,y) -> concat_sp_sep_3 "bvsge" (to_string_sorted_term x) (to_string_sorted_term y)
   | Error x -> ("Error: "^x)
 
 let rec to_string (l : t) = 
-  let l_str = (List.map (to_string_form) (l)) in
+  let l_str = (List.map (to_string_sorted_term) (l)) in
   (String.concat "\n" l_str)

@@ -11,6 +11,7 @@
 (declare-fun v3 () (_ BitVec 16))
 (declare-fun v4 () (_ BitVec 16))
 (declare-fun v5 () (_ BitVec 16))
+; No support for multi-arity and yet
 (assert (and
 	 (bvult v2 v4)
 	 (bvult v3 v4)
