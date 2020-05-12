@@ -5,7 +5,7 @@
 ;(set-info :category "crafted")
 ;(set-info :status unsat)
 
-; No support for defin-sort yet
+; No support for define-sort yet
 (define-sort bv () (_ BitVec 4))
 (define-sort abv () (Array bv bv))
 
