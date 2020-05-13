@@ -4,7 +4,7 @@
 (declare-fun z () (_ BitVec 4))
 (assert (= x (and true false true)))
 (assert (= x (or false false true)))
-(assert (= y (xor true true true true)))
+(assert (= y (xor true false true true)))
 (assert (= true false true))
 (assert (= z (bvand #b0000 #b0101 #b1010)))
 (assert (= z (bvor #b1111 #b0101 #b1010)))

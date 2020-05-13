@@ -139,6 +139,43 @@ let replace (formal_args : sorted_term list) (actual_args : sorted_term list) (b
   let arg_pairs = List.combine formal_args actual_args in
   traverse_and_replace_all arg_pairs body
 
+(* Take a multi-arity operator in SMTLIB and build a tree for its 
+   right associative version in LFSC *)
+let rec build_tree_right_ass (s : string) (args : sorted_term list) : sorted_term =
+  if (List.length args = 2) then
+    match s with
+      | "and" -> And ((List.nth args 0),(List.nth args 1))
+      | "or" -> Or ((List.nth args 0),(List.nth args 1))
+      | _ -> Error "Error with multi-arity right associative operator"
+  else
+    match s with
+      | "and" -> And ((List.nth args 0),(build_tree_right_ass s (List.tl args)))
+      | "or" -> Or ((List.nth args 0),(build_tree_right_ass s (List.tl args)))
+      | _ -> Error "Error with multi-arity right associative operator"
+
+(* Take a multi-arity operator in SMTLIB and build a tree for its 
+   keft associative version in LFSC *)
+let rec build_tree_left_ass (s : string) (args : sorted_term list) : sorted_term =
+  let rev_args = (List.rev args) in
+  if (List.length args = 2) then
+    match s with
+      | "xor" -> Xor ((List.nth rev_args 0),(List.nth rev_args 1))
+      | "bvand" -> Bvand ((List.nth rev_args 0),(List.nth rev_args 1))
+      | "bvor" -> Bvor ((List.nth rev_args 0),(List.nth rev_args 1))
+      | "bvxor" -> Bvxor ((List.nth rev_args 0),(List.nth rev_args 1))
+      | "bvadd" -> Bvadd ((List.nth rev_args 0),(List.nth rev_args 1))
+      | "bvmul" -> Bvmul ((List.nth rev_args 0),(List.nth rev_args 1))
+      | _ -> Error "Error with multi-arity left associative operator"
+  else
+    match s with
+      | "xor" -> Xor ((build_tree_left_ass s (List.tl rev_args)),(List.nth rev_args 0))
+      | "bvand" -> Bvand ((build_tree_left_ass s (List.tl rev_args)),(List.nth rev_args 0))
+      | "bvor" -> Bvor ((build_tree_left_ass s (List.tl rev_args)),(List.nth rev_args 0))
+      | "bvxor" -> Bvxor ((build_tree_left_ass s (List.tl rev_args)),(List.nth rev_args 0))
+      | "bvadd" -> Bvadd ((build_tree_left_ass s (List.tl rev_args)),(List.nth rev_args 0))
+      | "bvmul" -> Bvmul ((build_tree_left_ass s (List.tl rev_args)),(List.nth rev_args 0))
+      | _ -> Error "Error with multi-arity left associative operator"
+
 let concat_sp_sep_1 a = "("^a^")"
 let concat_sp_sep_2 a b = "("^a^" "^b^")"
 let concat_sp_sep_3 a b c = "("^a^" "^b^" "^c^")"
@@ -189,14 +226,14 @@ sorted_term:
   | FALSE { False }
   | LPAREN NOT s=sorted_term RPAREN 
     { Not s }
-  | LPAREN AND s1=sorted_term s2=sorted_term RPAREN
-    { And (s1, s2) }
-  | LPAREN OR s1=sorted_term s2=sorted_term RPAREN
-    { Or (s1, s2) }
+  | LPAREN AND args=list(sorted_term) RPAREN
+    { (build_tree_right_ass "and" args) }
+  | LPAREN OR args=list(sorted_term) RPAREN
+    { (build_tree_right_ass "or" args) }
   | LPAREN IMPL s1=sorted_term s2=sorted_term RPAREN
     { Impl (s1, s2) }
-  | LPAREN XOR s1=sorted_term s2=sorted_term RPAREN
-    { Xor (s1, s2) }
+  | LPAREN XOR args=list(sorted_term) RPAREN
+    { (build_tree_left_ass "xor" args) }
   | LPAREN EQUALS s1=sorted_term s2=sorted_term RPAREN
     { Eq (s1, s2) } 
   | LPAREN ITE s1=sorted_term s2=sorted_term s3=sorted_term RPAREN
@@ -232,22 +269,22 @@ sorted_term:
     { Bvbin $1 }
   | BVHEX
     { Bvhex $1 }
-  | LPAREN BVAND s1=sorted_term s2=sorted_term RPAREN
-    { Bvand (s1, s2) }
-  | LPAREN BVOR s1=sorted_term s2=sorted_term RPAREN
-    { Bvor (s1, s2) }
-  | LPAREN BVXOR s1=sorted_term s2=sorted_term RPAREN
-    { Bvxor (s1, s2) }
+  | LPAREN BVAND args=list(sorted_term) RPAREN
+    { (build_tree_left_ass "bvand" args) }
+  | LPAREN BVOR args=list(sorted_term) RPAREN
+    { (build_tree_left_ass "bvor" args) }
+  | LPAREN BVXOR args=list(sorted_term) RPAREN
+    { (build_tree_left_ass "bvxor" args) }
   | LPAREN BVNAND s1=sorted_term s2=sorted_term RPAREN
     { Bvnand (s1, s2) }
   | LPAREN BVNOR s1=sorted_term s2=sorted_term RPAREN
     { Bvnor (s1, s2) }
   | LPAREN BVXNOR s1=sorted_term s2=sorted_term RPAREN
     { Bvxnor (s1, s2) }
-  | LPAREN BVMUL s1=sorted_term s2=sorted_term RPAREN
-    { Bvmul (s1, s2) }
-  | LPAREN BVADD s1=sorted_term s2=sorted_term RPAREN
-    { Bvadd (s1, s2) }
+  | LPAREN BVMUL args=list(sorted_term) RPAREN
+    { (build_tree_left_ass "bvmul" args) }
+  | LPAREN BVADD args=list(sorted_term) RPAREN
+    { (build_tree_left_ass "bvadd" args) }
   | LPAREN BVSUB s1=sorted_term s2=sorted_term RPAREN
     { Bvsub (s1, s2) }
   | LPAREN BVUDIV s1=sorted_term s2=sorted_term RPAREN
