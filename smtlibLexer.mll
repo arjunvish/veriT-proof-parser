@@ -80,6 +80,7 @@
       val ident : string -> t
       val bv_bin : string -> t
       val bv_hex : string -> t
+      val bv_dec : string -> t
       val eof : t
       val simple_string : string -> t
       val hash_semi : t
@@ -184,9 +185,10 @@ let unquoted_start =
   unquoted # ['#' '|'] | '#' unquoted # ['|'] | '|' unquoted # ['#']
 
 let integer = digit+
-let ident = ('_')* ['a'-'z' 'A'-'Z' '\'' ]['a'-'z' 'A'-'Z' '0'-'9' '\\' '_']*
+let bv_dec = ('b''v')(digit)+
 let bv_bin = ('#''b')('0'|'1')+
 let bv_hex = ('#''x')(hexdigit)+
+let ident = ('_')* ['a'-'z' 'A'-'Z' '\'' ]['a'-'z' 'A'-'Z' '0'-'9' '\\' '_']*
 
 rule main buf = parse
   | lf | dos_newline { found_newline lexbuf 0;
@@ -254,6 +256,9 @@ rule main buf = parse
   | "bvsle" { Token.bvsle }
   | "bvsgt" { Token.bvsgt }
   | "bvsge" { Token.bvsge }
+  | (bv_bin as b) { Token.bv_bin b }
+  | (bv_hex as h) { Token.bv_hex h }
+  | (bv_dec as d) { Token.bv_dec d }
   | '(' '~' (integer as i) ')' {Token.integer ("-"^i) }
   | integer as i { Token.integer i }
   | '"'
@@ -439,6 +444,7 @@ and scan_block_comment buf locs = parse
           (*try Hashtbl.find keywords i with Not_found ->*) IDENT i
         let bv_bin b = BVBIN b
         let bv_hex h = BVHEX h
+        let bv_dec d = BVDEC d
         let simple_string x =
           (*try Hashtbl.find keywords x with Not_found ->*) IDENT x
         let quoted_string _ buf = IDENT (Buffer.contents buf)

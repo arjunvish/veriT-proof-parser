@@ -8,7 +8,6 @@ open SmtlibAst
 (* Hashtable to store function definitions *)
 let fun_map = Hashtbl.create 10
 
-
 (* Traverse the term "body" and replace all variable occurrences of
    x by y*)
 let rec traverse_and_replace_let (x : sorted_term) (y : sorted_term) (body : sorted_term) : sorted_term = 
@@ -176,6 +175,95 @@ let rec build_tree_left_ass (s : string) (args : sorted_term list) : sorted_term
       | "bvmul" -> Bvmul ((build_tree_left_ass s (List.tl rev_args)),(List.nth rev_args 0))
       | _ -> Error "Error with multi-arity left associative operator"
 
+(* The mod operator in OCaml implements remainder 
+with respect to numeral division. Since numeral division
+in OCaml rounds toward 0, we design modulo which considers 
+division that rounds toward negative infinity. 
+For example, -1 mod 8 is -1 (with quotient 0) in OCaml, 
+we want it to be 7 (with quotient -1).
+While considering a mod b, the OCaml mod operator will do what 
+we want when a and b are positive. The following function will 
+additionally do what we want when a is negative; it wont do what 
+we want when b is negative, but that's okay since 
+we don't consider cases of 
+modulo-n arithmetic where n is negative. *)
+let modulo (x : Numeral.t) (y : Numeral.t) : Numeral.t =
+  let result = (Numeral.rem x y) in
+    if (Numeral.geq result Numeral.zero) then result
+  else (Numeral.add result y)
+
+(* Function that calculates the nth power of two *)
+let rec pow2 (n : Numeral.t) : Numeral.t =
+  if (Numeral.equal n Numeral.zero) then
+    Numeral.one
+  else
+    Numeral.mult (Numeral.succ (Numeral.one)) 
+                 (pow2 (Numeral.sub n Numeral.one))
+
+(* Function that returns unsigned fixed-width int or bitvector version of a numeral *)
+let bv_dec_to_bin (i : Numeral.t) (size : Numeral.t) : string =
+  (* x = 2^N for ubvN, where we need to 
+  do n modulo x on the input n *)
+  let m = pow2 size in
+  let n = modulo i m in
+  (* Tail-recursive function that converts n to type t,
+  which is a list of bools *)
+  let rec convert (acc : bool list) (l : Numeral.t) (n : Numeral.t) =
+    if (Numeral.gt n Numeral.zero) then
+      convert ((Numeral.equal (Numeral.rem n (Numeral.of_int 2)) Numeral.one) :: acc) 
+              (Numeral.add l Numeral.one) (Numeral.div n (Numeral.of_int 2))
+    else (acc, l)
+  in
+  let bv, l = convert [] Numeral.zero n in
+  (* For n-bit BV, pad upto n bits with 0s *)
+  let rec pad (bv : bool list) (l :Numeral.t) =
+    if (Numeral.gt l Numeral.zero) then 
+      pad (false :: bv) (Numeral.sub l Numeral.one) 
+    else 
+      bv
+  in
+  let rec bv_to_string (b : bool list) : string = 
+    match b with
+    | true :: t -> "1"^(bv_to_string t)
+    | false :: t -> "0"^(bv_to_string t)
+    | [] -> ""
+  in
+  ("#b"^(bv_to_string (pad bv (Numeral.sub size l))))
+
+(*
+let bv_dec_to_bin (i : int) (l : int) : string =
+  let modulo (x : int) (y : int) : int =
+    let result = (x mod y) in
+      if (result >= 0) then result
+      else (result + y) 
+  in
+  let rec pow2 (n : int) : int =
+    if (n = 0) then 1
+    else (2 * (pow2 (n - 1))) 
+  in
+  (* x = 2^N for ubvN, where we need to 
+  do n modulo x on the input n *)
+  let m = pow2 l in
+  let n = modulo i m in
+  (* Tail-recursive function that converts n to type t,
+  which is a list of bools *)
+  let rec convert acc (l : int) (n : int) =
+    if (n > 0) then convert (((n mod 2) = 1) :: acc) (l + 1) (n / 2)
+    else (acc, l)
+  in
+  let bv, l_new = convert [] 0 n in
+  (* For n-bit BV, pad upto n bits with 0s *)
+  let rec pad (bv : bool list) (l : int) =
+    if (l > 0) then (pad (false :: bv) (l - 1))
+    else bv
+  in
+  let rec bv_to_string (b : bool list) : string = 
+    match b with
+    | true :: t -> "1"^(bv_to_string t)
+    | false :: t -> "0"^(bv_to_string t)
+    | [] -> ""
+  in ("#b"^(bv_to_string (pad bv (l - l_new))))
+*)
 let concat_sp_sep_1 a = "("^a^")"
 let concat_sp_sep_2 a b = "("^a^" "^b^")"
 let concat_sp_sep_3 a b c = "("^a^" "^b^" "^c^")"
@@ -188,6 +276,7 @@ let concat_sp_sep_8 a b c d e f g h = "("^a^" "^b^" "^c^" "^d^" "^e^" "^f^" "^g^
 
 %token <string> IDENT
 %token <int> INT
+%token <string> BVDEC
 %token <string> BVBIN
 %token <string> BVHEX
 %token LPAREN RPAREN COLON EOF SETLOGIC TRUE FALSE NOT AND OR IMPL XOR EQUALS ITE BOOL HASH_SEMI
@@ -256,11 +345,6 @@ sorted_term:
     { Bvsgt (s1, s2) }
   | LPAREN BVSGE s1=sorted_term s2=sorted_term RPAREN
     { Bvsge (s1, s2) }
-  | IDENT { Var $1 }
-  | LPAREN IDENT actual_args=list(sorted_term) RPAREN
-    { match (Hashtbl.find fun_map $2) with
-      | (formal_args, body) -> replace formal_args actual_args body
-      | exception Not_found -> Appl ($2, actual_args) }
   | LPAREN SELECT s1=sorted_term s2=sorted_term RPAREN
     { Select (s1, s2) }
   | LPAREN STORE s1=sorted_term s2=sorted_term s3=sorted_term RPAREN
@@ -269,6 +353,11 @@ sorted_term:
     { Bvbin $1 }
   | BVHEX
     { Bvhex $1 }
+  | LPAREN INDEX s=BVDEC l=INT RPAREN
+    { let len = (String.length s) in
+      let i_num = Numeral.of_string (String.sub s 2 (len-2)) in
+      let l_num = Numeral.of_int l in
+        Bvbin (bv_dec_to_bin i_num l_num) }
   | LPAREN BVAND args=list(sorted_term) RPAREN
     { (build_tree_left_ass "bvand" args) }
   | LPAREN BVOR args=list(sorted_term) RPAREN
@@ -323,6 +412,12 @@ sorted_term:
     { Bvrepeat (i,s) }
   | LPAREN BVCOMP s1=sorted_term s2=sorted_term RPAREN
     { Bvcomp (s1,s2) }
+  | IDENT { Var $1 }
+  | LPAREN IDENT actual_args=list(sorted_term) RPAREN
+    { match (Hashtbl.find fun_map $2) with
+      | (formal_args, body) -> replace formal_args actual_args body
+      | exception Not_found -> Appl ($2, actual_args) }
+  
 ;
 
 assertion:
