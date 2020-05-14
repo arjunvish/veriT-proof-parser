@@ -226,6 +226,7 @@ let bv_dec_to_bin (i : Numeral.t) (size : Numeral.t) : string =
   in
   ("#b"^(bv_to_string (pad bv (Numeral.sub size l))))
 
+(* Function that returns unsigned fixed-width int or bitvector version of a hexadecimal constant *)
 let bv_hex_to_bin (i : string) : string = 
   let len = String.length i in
   let rec hex_to_bv (i : string) (len : int) : bool list =

@@ -129,9 +129,14 @@ let rec to_string_sorted_term =
   | Error x -> ("Error: "^x)
   | Zilch _ -> ""
 
+let rec my_concat (sep : string) (term_list : sorted_term list) : string = 
+  match term_list with
+  | Zilch () :: t -> ""^(my_concat sep t)
+  | h :: t -> (to_string_sorted_term h)^sep^(my_concat sep t)
+  | [] -> ""
+
 let rec to_string (l : t) = 
-  let l_str = (List.map (to_string_sorted_term) (l)) in
-  (String.concat "\n" l_str)
+  my_concat "\n" l
 
 (* Must be called with first argument as LFSC tree *)
 let rec eq (t1 : t) (t2 : t) : bool =
@@ -139,5 +144,7 @@ let rec eq (t1 : t) (t2 : t) : bool =
   | True :: t -> eq t t2
   | h :: t -> (match (List.find (fun x -> h = x) t2) with
               | x -> eq t t2
-              | exception Not_found -> Format.printf "This assertion not matched: %s\n" (to_string_sorted_term h);false)
+              | exception Not_found -> 
+                Format.printf "This assertion from LFSC file not matched in SMTLIB file: %s\n\n" (to_string_sorted_term h);
+                false)
   | [] -> true

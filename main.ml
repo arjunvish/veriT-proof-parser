@@ -31,7 +31,7 @@ let main () =
   if (SmtlibAst.eq lfscTree smtTree) then
     Format.printf "Trees match!\n"
   else
-    Format.printf "From SMT: %s\nFrom LFSC:\n%s\n" 
+    Format.printf "From SMT:\n%s\n\nFrom LFSC:\n%s\n" 
       (SmtlibAst.to_string smtTree)
       (SmtlibAst.to_string lfscTree)
 
