@@ -1,4 +1,3 @@
 - multi-arity logical operators EQ only
-- convert hex BVs to binary BVs
 - set-infos
 - Check entire bv signature with all the extensions

@@ -81,11 +81,13 @@
       val bv_bin : string -> t
       val bv_hex : string -> t
       val bv_dec : string -> t
+      val smtlib_option : string -> t
       val eof : t
       val simple_string : string -> t
       val hash_semi : t
       val quoted_string : Lexing.position -> Quoted_string_buffer.t -> t
       val setlogic : t
+      val setoption : t
       val declareconst : t
       val declarefun : t
       val declaresort : t
@@ -189,6 +191,7 @@ let bv_dec = ('b''v')(digit)+
 let bv_bin = ('#''b')('0'|'1')+
 let bv_hex = ('#''x')(hexdigit)+
 let ident = ('_')* ['a'-'z' 'A'-'Z' '\'' ]['a'-'z' 'A'-'Z' '0'-'9' '\\' '_']*
+let smtlib_option = (':')['a'-'z' 'A'-'Z' '-' ]['a'-'z' 'A'-'Z' '0'-'9' '-']*
 
 rule main buf = parse
   | lf | dos_newline { found_newline lexbuf 0;
@@ -198,6 +201,7 @@ rule main buf = parse
   | '(' { Token.lparen }
   | ')' { Token.rparen }
   | "set-logic" { Token.setlogic }
+  | "set-option" { Token.setoption }
   | "declare-const" { Token.declareconst }
   | "declare-fun" { Token.declarefun }
   | "declare-sort" { Token.declaresort }
@@ -259,6 +263,7 @@ rule main buf = parse
   | (bv_bin as b) { Token.bv_bin b }
   | (bv_hex as h) { Token.bv_hex h }
   | (bv_dec as d) { Token.bv_dec d }
+  | (smtlib_option as o) { Token.smtlib_option o }
   | '(' '~' (integer as i) ')' {Token.integer ("-"^i) }
   | integer as i { Token.integer i }
   | '"'
@@ -445,10 +450,12 @@ and scan_block_comment buf locs = parse
         let bv_bin b = BVBIN b
         let bv_hex h = BVHEX h
         let bv_dec d = BVDEC d
+        let smtlib_option o = SMTLIBOPTION o
         let simple_string x =
           (*try Hashtbl.find keywords x with Not_found ->*) IDENT x
         let quoted_string _ buf = IDENT (Buffer.contents buf)
         let setlogic = SETLOGIC
+        let setoption = SETOPTION
         let declareconst = DECLARECONST
         let declarefun = DECLAREFUN
         let declaresort = DECLARESORT
