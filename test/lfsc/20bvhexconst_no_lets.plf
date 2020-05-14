@@ -1,0 +1,80 @@
+(check
+ ;; Declarations
+(% v1 var_bv
+(% v0 var_bv
+(% A3 (th_holds true)
+(% A2 (th_holds (= (BitVec 4) (a_var_bv 4 v0) (a_var_bv 4 v1)))
+(% A1 (th_holds (= (BitVec 4) (a_var_bv 4 v1) (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn)))))))
+(% A0 (th_holds (= (BitVec 4) (a_var_bv 4 v0) (a_bv 4 (bvc b0 (bvc b0 (bvc b0 (bvc b0  bvn)))))))
+(: (holds cln)
+
+ ;; Printing deferred declarations 
+
+
+ ;; Printing the global let map ;; Printing aliasing declarations 
+
+
+ ;; Rewrites for Lemmas 
+
+ ;; In the preprocessor we trust 
+(th_let_pf _ (trust_f (= (BitVec 4) (a_var_bv 4 v1) (a_var_bv 4 v0))) (\ .PA266
+(th_let_pf _ (trust_f (= (BitVec 4) (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn))))) (a_var_bv 4 v1))) (\ .PA265
+(th_let_pf _ (trust_f (= (BitVec 4) (a_bv 4 (bvc b0 (bvc b0 (bvc b0 (bvc b0  bvn))))) (a_var_bv 4 v0))) (\ .PA264
+
+;; Printing mapping from preprocessed assertions into atoms 
+(decl_atom (= (BitVec 4) (a_bv 4 (bvc b0 (bvc b0 (bvc b0 (bvc b0  bvn))))) (a_var_bv 4 v0)) (\ .v2 (\ .a2
+(decl_atom (= (BitVec 4) (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn))))) (a_var_bv 4 v1)) (\ .v3 (\ .a3
+(decl_atom (= (BitVec 4) (a_var_bv 4 v1) (a_var_bv 4 v0)) (\ .v4 (\ .a4
+(satlem _ _ (asf _ _ _ .a2 (\ .l4 (clausify_false (contra _ .PA264 .l4)))) (\ .pb4
+(satlem _ _ (asf _ _ _ .a3 (\ .l6 (clausify_false (contra _ .PA265 .l6)))) (\ .pb5
+(satlem _ _ (asf _ _ _ .a4 (\ .l8 (clausify_false (contra _ .PA266 .l8)))) (\ .pb6
+ ;; Theory Lemmas 
+
+;; BB atom mapping
+
+(decl_bblast _ _ _ (bv_bbl_const 4 _ (bvc b0 (bvc b0 (bvc b0 (bvc b0  bvn)))))(\ bt241
+(decl_bblast _ _ _ (bv_bbl_var 4 v0 _)(\ bt239
+(decl_bblast _ _ _ (bv_bbl_const 4 _ (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn)))))(\ bt261
+(decl_bblast _ _ _ (bv_bbl_var 4 v1 _)(\ bt240
+(th_let_pf _ (bv_bbl_= _ _ _ _ _ _ bt240 bt239)(\ .PA317
+(th_let_pf _ (bv_bbl_= _ _ _ _ _ _ bt261 bt240)(\ .PA302
+(th_let_pf _ (bv_bbl_= _ _ _ _ _ _ bt241 bt239)(\ .PA283
+(decl_atom true (\ bb.v0 (\ bb.a0
+(decl_atom false (\ bb.v1 (\ bb.a1
+(decl_atom (= (BitVec 4) (a_bv 4 (bvc b0 (bvc b0 (bvc b0 (bvc b0  bvn))))) (a_var_bv 4 v0)) (\ bb.v2 (\ bb.a2
+(decl_atom (= (BitVec 4) (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn))))) (a_var_bv 4 v1)) (\ bb.v12 (\ bb.a12
+(decl_atom (= (BitVec 4) (a_var_bv 4 v1) (a_var_bv 4 v0)) (\ bb.v22 (\ bb.a22
+(decl_atom (bitof v0 0) (\ bb.v3 (\ bb.a3
+(decl_atom (iff false (bitof v0 0)) (\ bb.v4 (\ bb.a4
+(decl_atom (and (iff false (bitof v0 0)) (and (iff false (bitof v0 1)) (and (iff false (bitof v0 2)) (iff false (bitof v0 3)) ))) (\ bb.v11 (\ bb.a11
+(decl_atom (bitof v1 0) (\ bb.v13 (\ bb.a13
+(decl_atom (iff true (bitof v1 0)) (\ bb.v14 (\ bb.a14
+(decl_atom (and (iff true (bitof v1 0)) (and (iff true (bitof v1 1)) (and (iff true (bitof v1 2)) (iff true (bitof v1 3)) ))) (\ bb.v21 (\ bb.a21
+(decl_atom (iff (bitof v1 0) (bitof v0 0)) (\ bb.v23 (\ bb.a23
+(decl_atom (and (iff (bitof v1 0) (bitof v0 0)) (and (iff (bitof v1 1) (bitof v0 1)) (and (iff (bitof v1 2) (bitof v0 2)) (iff (bitof v1 3) (bitof v0 3)) ))) (\ bb.v27 (\ bb.a27
+
+;; Bit-blasting definitional clauses 
+
+(satlem _ _ (asf _ _ _ bb.a11 (\ bb.l22 (ast _ _ _ bb.a2 (\ bb.l5 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ bb.l5) (iff_elim_1 _ _ .PA283)) bb.l22)))))) (\ bb.pb20
+(satlem _ _ (asf _ _ _ bb.a13 (\ bb.l26 (ast _ _ _ bb.a14 (\ bb.l29 (ast _ _ _ bb.a0 (\ bb.l1 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ bb.l1) (iff_elim_1 _ _ bb.l29)) bb.l26)))))))) (\ bb.pb22
+(satlem _ _ (ast _ _ _ bb.a23 (\ bb.l47 (ast _ _ _ bb.a13 (\ bb.l27 (asf _ _ _ bb.a3 (\ bb.l6 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ bb.l27) (iff_elim_1 _ _ bb.l47)) bb.l6)))))))) (\ bb.pb37
+(satlem _ _ (asf _ _ _ bb.a4 (\ bb.l8 (ast _ _ _ bb.a11 (\ bb.l23 (clausify_false (contra _ (and_elim_1 _ _ bb.l23) bb.l8)))))) (\ bb.pb15
+(satlem _ _ (ast _ _ _ bb.a1 (\ bb.l3 (clausify_false bb.l3))) (\ bb.pb3
+(satlem _ _ (asf _ _ _ bb.a0 (\ bb.l0 (clausify_false (contra _ truth bb.l0)))) (\ bb.pb2
+(satlem _ _ (ast _ _ _ bb.a22 (\ bb.l45 (asf _ _ _ bb.a27 (\ bb.l54 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ bb.l45) (iff_elim_1 _ _ .PA317)) bb.l54)))))) (\ bb.pb58
+(satlem _ _ (asf _ _ _ bb.a21 (\ bb.l42 (ast _ _ _ bb.a12 (\ bb.l25 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ bb.l25) (iff_elim_1 _ _ .PA302)) bb.l42)))))) (\ bb.pb35
+(satlem _ _ (ast _ _ _ bb.a27 (\ bb.l55 (asf _ _ _ bb.a23 (\ bb.l46 (clausify_false (contra _ (and_elim_1 _ _ bb.l55) bb.l46)))))) (\ bb.pb53
+(satlem _ _ (asf _ _ _ bb.a14 (\ bb.l28 (ast _ _ _ bb.a21 (\ bb.l43 (clausify_false (contra _ (and_elim_1 _ _ bb.l43) bb.l28)))))) (\ bb.pb30
+(satlem _ _ (ast _ _ _ bb.a3 (\ bb.l7 (ast _ _ _ bb.a4 (\ bb.l9 (asf _ _ _ bb.a1 (\ bb.l2 (clausify_false (contra _ (or_elim_1 _ _ bb.l2 (iff_elim_2 _ _ bb.l9)) (not_not_intro _ bb.l7))))))))) (\ bb.pb7
+
+ ;; Bit-blasting learned clauses 
+
+(satlem _ _ (ast _ _ _ .a4 (\ .l9 (ast _ _ _ .a3 (\ .l7 (ast _ _ _ .a2 (\ .l5 (intro_assump_t _ _ _ .l9 bb.a22(\ unit22
+(intro_assump_t _ _ _ .l7 bb.a12(\ unit12
+(intro_assump_t _ _ _ .l5 bb.a2(\ unit2
+(satlem_simplify _ _ _ (Q _ _ (Q _ _ (R _ _ (R _ _ (Q _ _ (Q _ _ (Q _ _ (Q _ _ (R _ _ (R _ _ bb.pb58 bb.pb53 bb.v27) bb.pb37 bb.v23) bb.pb22 bb.v13) bb.pb2 bb.v0) bb.pb30 bb.v14) bb.pb35 bb.v21) bb.pb7 bb.v3) bb.pb3 bb.v1) bb.pb15 bb.v4) bb.pb20 bb.v11) (\ bb.cl60
+(satlem_simplify _ _ _ (Q _ _ (Q _ _ (Q _ _ bb.cl60 unit2 bb.v2)unit12 bb.v12)unit22 bb.v22)(\ e e)
+)))))))))))))))( \ .lemc61
+;; Printing final unsat proof 
+(satlem_simplify _ _ _ (Q _ _ (Q _ _ (Q _ _ .lemc61 .pb6 .v4) .pb5 .v3) .pb4 .v2) (\ empty empty))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+;;

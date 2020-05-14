@@ -1,0 +1,46 @@
+(check
+ ;; Declarations
+(% c (term (arrow (BitVec 4) (arrow (BitVec 4) (BitVec 4))))
+(% b var_bv
+(% a var_bv
+(% A4 (th_holds true)
+(% A3 (th_holds (= (BitVec 4) (apply _ _ (apply _ _ c (a_var_bv 4 a))(a_var_bv 4 b)) (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn)))))))
+(% A1 (th_holds (= (BitVec 4) (a_var_bv 4 b) (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn)))))))
+(% A0 (th_holds (= (BitVec 4) (a_var_bv 4 a) (a_bv 4 (bvc b0 (bvc b0 (bvc b0 (bvc b0  bvn)))))))
+(% A2 (th_holds (= (BitVec 4) (apply _ _ (apply _ _ c (a_var_bv 4 a))(a_var_bv 4 b)) (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b0  bvn)))))))
+(: (holds cln)
+
+ ;; Printing deferred declarations 
+
+
+ ;; Printing the global let map ;; Printing aliasing declarations 
+
+
+ ;; Rewrites for Lemmas 
+
+ ;; In the preprocessor we trust 
+(th_let_pf _ (trust_f (= (BitVec 4) (apply _ _ (apply _ _ c (a_var_bv 4 a))(a_var_bv 4 b)) (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn))))))) (\ .PA287
+(th_let_pf _ (trust_f (= (BitVec 4) (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b0  bvn))))) (apply _ _ (apply _ _ c (a_var_bv 4 a))(a_var_bv 4 b)))) (\ .PA290
+
+;; Printing mapping from preprocessed assertions into atoms 
+(decl_atom (= (BitVec 4) (apply _ _ (apply _ _ c (a_var_bv 4 a))(a_var_bv 4 b)) (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn)))))) (\ .v5 (\ .a5
+(decl_atom (= (BitVec 4) (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b0  bvn))))) (apply _ _ (apply _ _ c (a_var_bv 4 a))(a_var_bv 4 b))) (\ .v4 (\ .a4
+(satlem _ _ (asf _ _ _ .a4 (\ .l8 (clausify_false (contra _ .PA290 .l8)))) (\ .pb6
+(satlem _ _ (asf _ _ _ .a5 (\ .l10 (clausify_false (contra _ .PA287 .l10)))) (\ .pb7
+ ;; Theory Lemmas 
+
+;; BB atom mapping
+
+
+;; Bit-blasting definitional clauses 
+
+
+ ;; Bit-blasting learned clauses 
+
+(satlem _ _ (ast _ _ _ .a5 (\ .l11 (ast _ _ _ .a4 (\ .l9  ;; UF Theory Lemma 
+;;(not (= (c a b) (_ bv15 4))) (not (= (_ bv14 4) (c a b))) 
+(clausify_false (contra _ (trans _ _ _ _ .l9 .l11) (bv_disequal_constants 4 (bvc b1 (bvc b1 (bvc b1 (bvc b0 bvn)))) (bvc b1 (bvc b1 (bvc b1 (bvc b1 bvn)))))))
+))))( \ .lemc8
+;; Printing final unsat proof 
+(satlem_simplify _ _ _ (Q _ _ (Q _ _ .lemc8 .pb7 .v5) .pb6 .v4) (\ empty empty))))))))))))))))))))))))))))
+;;

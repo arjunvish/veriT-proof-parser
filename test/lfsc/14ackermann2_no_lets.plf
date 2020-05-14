@@ -1,0 +1,52 @@
+(check
+ ;; Declarations
+(% h (term (arrow (BitVec 4) (BitVec 4)))
+(% g (term (arrow (BitVec 4) (BitVec 4)))
+(% f (term (arrow (BitVec 4) (BitVec 4)))
+(% v1 var_bv
+(% v0 var_bv
+(% A2 (th_holds true)
+(% A1 (th_holds (= (BitVec 4) (a_var_bv 4 v0) (a_var_bv 4 v1)))
+(% A0 (th_holds (not (= (BitVec 4) (apply _ _ f (apply _ _ g (apply _ _ h (a_var_bv 4 v0)))) (apply _ _ f (apply _ _ g (apply _ _ h (a_var_bv 4 v1)))))))
+(: (holds cln)
+
+ ;; Printing deferred declarations 
+
+
+ ;; Printing the global let map ;; Printing aliasing declarations 
+
+
+ ;; Rewrites for Lemmas 
+
+ ;; In the preprocessor we trust 
+(th_let_pf _ (trust_f (= (BitVec 4) (a_var_bv 4 v1) (a_var_bv 4 v0))) (\ .PA274
+(th_let_pf _ (trust_f (not (= (BitVec 4) (apply _ _ f (apply _ _ g (apply _ _ h (a_var_bv 4 v1)))) (apply _ _ f (apply _ _ g (apply _ _ h (a_var_bv 4 v0))))))) (\ .PA273
+
+;; Printing mapping from preprocessed assertions into atoms 
+(decl_atom (= (BitVec 4) (apply _ _ f (apply _ _ g (apply _ _ h (a_var_bv 4 v0)))) (apply _ _ f (apply _ _ g (apply _ _ h (a_var_bv 4 v1))))) (\ .v4 (\ .a4
+(decl_atom (= (BitVec 4) (apply _ _ f (apply _ _ g (apply _ _ h (a_var_bv 4 v1)))) (apply _ _ f (apply _ _ g (apply _ _ h (a_var_bv 4 v0))))) (\ .v2 (\ .a2
+(decl_atom (= (BitVec 4) (a_var_bv 4 v1) (a_var_bv 4 v0)) (\ .v3 (\ .a3
+(satlem _ _ (ast _ _ _ .a2 (\ .l5 (clausify_false (contra _ .l5 .PA273)))) (\ .pb4
+(satlem _ _ (asf _ _ _ .a3 (\ .l6 (clausify_false (contra _ .PA274 .l6)))) (\ .pb5
+ ;; Theory Lemmas 
+
+;; BB atom mapping
+
+
+;; Bit-blasting definitional clauses 
+
+
+ ;; Bit-blasting learned clauses 
+
+(satlem _ _ (ast _ _ _ .a3 (\ .l7 (asf _ _ _ .a2 (\ .l4 (asf _ _ _ .a4 (\ .l8  ;; UF Theory Lemma 
+;;(not (= v1 v0)) (= (f (g (h v1))) (f (g (h v0)))) (= (f (g (h v0))) (f (g (h v1)))) 
+(clausify_false (contra _ (symm _ _ _ (cong _ _ _ _ _ _ (refl _ f) (cong _ _ _ _ _ _ (refl _ g) (cong _ _ _ _ _ _ (refl _ h) (symm _ _ _ .l7))))) .l4))
+))))))( \ .lemc6s0
+(satlem _ _ (ast _ _ _ .a3 (\ .l7 (asf _ _ _ .a2 (\ .l4 (ast _ _ _ .a4 (\ .l9  ;; UF Theory Lemma 
+;;(not (= v1 v0)) (= (f (g (h v1))) (f (g (h v0)))) (not (= (f (g (h v0))) (f (g (h v1))))) 
+(clausify_false (contra _ (symm _ _ _ (cong _ _ _ _ _ _ (refl _ f) (cong _ _ _ _ _ _ (refl _ g) (cong _ _ _ _ _ _ (refl _ h) (symm _ _ _ .l7))))) .l4))
+))))))( \ .lemc6s1
+(satlem_simplify _ _ _ (R _ _ .lemc6s0 .lemc6s1 .v4) ( \ .lemc6
+;; Printing final unsat proof 
+(satlem_simplify _ _ _ (R _ _ (Q _ _ .lemc6 .pb5 .v3) .pb4 .v2) (\ empty empty)))))))))))))))))))))))))))))))))))
+;;

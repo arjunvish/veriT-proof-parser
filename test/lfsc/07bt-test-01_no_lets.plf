@@ -1,0 +1,87 @@
+(check
+ ;; Declarations
+(% y1 (term Bool)
+(% x0 (term Bool)
+(% y0 (term Bool)
+(% z0 (term Bool)
+(% x1 (term Bool)
+(% BOOLEAN_TERM_VARIABLE_275 (term Bool)
+(% f (term (arrow Bool Bool))
+(% BOOLEAN_TERM_VARIABLE_272 (term Bool)
+(% A5 (th_holds true)
+(% A4 (th_holds (not (iff (p_app (apply _ _ f (f_to_b (or (p_app x0) (p_app z0))))) (p_app (apply _ _ f (f_to_b (and (p_app x1) (p_app y1))))))))
+(% A1 (th_holds (or (not (p_app y0)) (p_app z0)))
+(% A2 (th_holds (p_app x1))
+(% A0 (th_holds (or (p_app x0) (p_app y0)))
+(% A3 (th_holds (p_app y1))
+(: (holds cln)
+
+ ;; Printing deferred declarations 
+
+
+ ;; Printing the global let map ;; Printing aliasing declarations 
+
+
+ ;; Rewrites for Lemmas 
+
+ ;; In the preprocessor we trust 
+(th_let_pf _ (trust_f (not (iff (p_app (apply _ _ f BOOLEAN_TERM_VARIABLE_272)) (p_app (apply _ _ f BOOLEAN_TERM_VARIABLE_275))))) (\ .PA279
+(th_let_pf _ (trust_f (p_app x1)) (\ .PA262
+(th_let_pf _ (trust_f (iff (p_app BOOLEAN_TERM_VARIABLE_272) (or (p_app x0) (p_app z0)))) (\ .PA273
+(th_let_pf _ (trust_f (p_app y1)) (\ .PA263
+(th_let_pf _ (trust_f (or (p_app x0) (p_app y0))) (\ .PA241
+(th_let_pf _ (trust_f (iff (p_app BOOLEAN_TERM_VARIABLE_275) (and (p_app x1) (p_app y1)))) (\ .PA276
+(th_let_pf _ (trust_f (or (not (p_app y0)) (p_app z0))) (\ .PA261
+
+;; Printing mapping from preprocessed assertions into atoms 
+(decl_atom (p_app x0) (\ .v2 (\ .a2
+(decl_atom (p_app y0) (\ .v3 (\ .a3
+(decl_atom (p_app z0) (\ .v4 (\ .a4
+(decl_atom (p_app x1) (\ .v5 (\ .a5
+(decl_atom (p_app y1) (\ .v6 (\ .a6
+(decl_atom (or (p_app x0) (p_app z0)) (\ .v10 (\ .a10
+(decl_atom (and (p_app x1) (p_app y1)) (\ .v12 (\ .a12
+(decl_atom (p_app BOOLEAN_TERM_VARIABLE_272) (\ .v9 (\ .a9
+(decl_atom (p_app (apply _ _ f BOOLEAN_TERM_VARIABLE_272)) (\ .v7 (\ .a7
+(decl_atom (p_app BOOLEAN_TERM_VARIABLE_275) (\ .v11 (\ .a11
+(decl_atom (p_app (apply _ _ f BOOLEAN_TERM_VARIABLE_275)) (\ .v8 (\ .a8
+(satlem _ _ (ast _ _ _ .a4 (\ .l9 (asf _ _ _ .a10 (\ .l20 (clausify_false (contra _ .l9 (and_elim_2 _ _ (not_or_elim _ _ .l20)))))))) (\ .pb11
+(satlem _ _ (ast _ _ _ .a10 (\ .l21 (asf _ _ _ .a9 (\ .l18 (clausify_false (contra _ (or_elim_1 _ _ .l18 (iff_elim_2 _ _ .PA273)) (not_not_intro _ .l21))))))) (\ .pb14
+(satlem _ _ (asf _ _ _ .a3 (\ .l6 (asf _ _ _ .a2 (\ .l4 (clausify_false (contra _ (or_elim_1 _ _ .l4 .PA241) .l6)))))) (\ .pb4
+(satlem _ _ (asf _ _ _ .a12 (\ .l24 (ast _ _ _ .a6 (\ .l13 (ast _ _ _ .a5 (\ .l11 (clausify_false (contra _ .l13 (or_elim_1 _ _ (not_not_intro _ .l11) (not_and_elim _ _ .l24)))))))))) (\ .pb15
+(satlem _ _ (ast _ _ _ .a2 (\ .l5 (asf _ _ _ .a10 (\ .l20 (clausify_false (contra _ .l5 (and_elim_1 _ _ (not_or_elim _ _ .l20)))))))) (\ .pb10
+(satlem _ _ (ast _ _ _ .a3 (\ .l7 (asf _ _ _ .a4 (\ .l8 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ .l7) .PA261) .l8)))))) (\ .pb5
+(satlem _ _ (asf _ _ _ .a11 (\ .l22 (ast _ _ _ .a12 (\ .l25 (clausify_false (contra _ (or_elim_1 _ _ .l22 (iff_elim_2 _ _ .PA276)) (not_not_intro _ .l25))))))) (\ .pb16
+(satlem _ _ (asf _ _ _ .a6 (\ .l12 (clausify_false (contra _ .PA263 .l12)))) (\ .pb7
+(satlem _ _ (asf _ _ _ .a5 (\ .l10 (clausify_false (contra _ .PA262 .l10)))) (\ .pb6
+(satlem _ _ (ast _ _ _ .a7 (\ .l15 (ast _ _ _ .a8 (\ .l17 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ .l15) (iff_elim_1 _ _ (not_iff_elim _ _ .PA279))) (not_not_intro _ .l17))))))) (\ .pb8
+(satlem _ _ (asf _ _ _ .a7 (\ .l14 (asf _ _ _ .a8 (\ .l16 (clausify_false (contra _ (not_not_elim _ (or_elim_1 _ _ .l14 (iff_elim_2 _ _ (not_iff_elim _ _ .PA279)))) .l16)))))) (\ .pb9
+ ;; Theory Lemmas 
+
+;; BB atom mapping
+
+
+;; Bit-blasting definitional clauses 
+
+
+ ;; Bit-blasting learned clauses 
+
+(satlem _ _ (ast _ _ _ .a7 (\ .l15 (asf _ _ _ .a8 (\ .l16 (ast _ _ _ .a9 (\ .l19 (ast _ _ _ .a11 (\ .l23  ;; UF Theory Lemma 
+;;(not (f BOOLEAN_TERM_VARIABLE_272)) (f BOOLEAN_TERM_VARIABLE_275) (not BOOLEAN_TERM_VARIABLE_272) (not BOOLEAN_TERM_VARIABLE_275) 
+(clausify_false (contra _ (trans _ _ _ _ (symm _ _ _ (trans _ _ _ _ (cong _ _ _ _ _ _ (refl _ f) (symm _ _ _ (trans _ _ _ _ (pred_eq_t _ .l19) (symm _ _ _ (pred_eq_t _ .l23))))) (pred_eq_t _ .l15))) (pred_eq_f _ .l16)) t_t_neq_f))
+))))))))( \ .lemc17
+(satlem _ _ (asf _ _ _ .a7 (\ .l14 (ast _ _ _ .a8 (\ .l17 (ast _ _ _ .a9 (\ .l19 (ast _ _ _ .a11 (\ .l23  ;; UF Theory Lemma 
+;;(f BOOLEAN_TERM_VARIABLE_272) (not (f BOOLEAN_TERM_VARIABLE_275)) (not BOOLEAN_TERM_VARIABLE_272) (not BOOLEAN_TERM_VARIABLE_275) 
+(clausify_false (contra _ (trans _ _ _ _ (symm _ _ _ (trans _ _ _ _ (symm _ _ _ (cong _ _ _ _ _ _ (refl _ f) (symm _ _ _ (trans _ _ _ _ (pred_eq_t _ .l19) (symm _ _ _ (pred_eq_t _ .l23)))))) (pred_eq_t _ .l17))) (pred_eq_f _ .l14)) t_t_neq_f))
+))))))))( \ .lemc21
+;; Printing final unsat proof 
+(satlem_simplify _ _ _ (Q _ _ (Q _ _ .pb15 .pb7 .v6) .pb6 .v5) (\ .cl18
+(satlem_simplify _ _ _ (Q _ _ .pb16 .cl18 .v12) (\ .cl19
+(satlem_simplify _ _ _ (Q _ _ (Q _ _ .lemc17 .cl19 .v11) .pb9 .v7) (\ .cl20
+(satlem_simplify _ _ _ (Q _ _ (R _ _ (Q _ _ .lemc21 .cl19 .v11) .pb8 .v7) .cl20 .v8) (\ .cl22
+(satlem_simplify _ _ _ (R _ _ .pb14 .cl22 .v9) (\ .cl23
+(satlem_simplify _ _ _ (R _ _ .pb10 .cl23 .v10) (\ .cl24
+(satlem_simplify _ _ _ (R _ _ .pb4 .cl24 .v2) (\ .cl25
+(satlem_simplify _ _ _ (R _ _ .pb11 .cl23 .v10) (\ .cl26
+(satlem_simplify _ _ _ (R _ _ (Q _ _ .pb5 .cl25 .v3) .cl26 .v4) (\ empty empty)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+;;

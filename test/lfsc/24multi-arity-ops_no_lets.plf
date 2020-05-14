@@ -1,0 +1,45 @@
+(check
+ ;; Declarations
+(% y (term Bool)
+(% x (term Bool)
+(% z var_bv
+(% A7 (th_holds (= (BitVec 4) (a_var_bv 4 z) (bvadd 4 (bvadd 4 (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn))))) (a_bv 4 (bvc b0 (bvc b1 (bvc b0 (bvc b1  bvn))))))(a_bv 4 (bvc b1 (bvc b0 (bvc b1 (bvc b0  bvn))))))))
+(% A6 (th_holds (= (BitVec 4) (a_var_bv 4 z) (bvmul 4 (bvmul 4 (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn))))) (a_bv 4 (bvc b0 (bvc b1 (bvc b0 (bvc b1  bvn))))))(a_bv 4 (bvc b1 (bvc b0 (bvc b1 (bvc b0  bvn))))))))
+(% A4 (th_holds (= (BitVec 4) (a_var_bv 4 z) (bvor 4 (bvor 4 (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn))))) (a_bv 4 (bvc b0 (bvc b1 (bvc b0 (bvc b1  bvn))))))(a_bv 4 (bvc b1 (bvc b0 (bvc b1 (bvc b0  bvn))))))))
+(% A8 (th_holds true)
+(% A5 (th_holds (= (BitVec 4) (a_var_bv 4 z) (bvxor 4 (bvxor 4 (a_bv 4 (bvc b1 (bvc b1 (bvc b1 (bvc b1  bvn))))) (a_bv 4 (bvc b0 (bvc b1 (bvc b0 (bvc b1  bvn))))))(a_bv 4 (bvc b1 (bvc b0 (bvc b1 (bvc b0  bvn))))))))
+(% A0 (th_holds (iff (p_app x) (and true (and false true ))))
+(% A1 (th_holds (iff (p_app x) (or false (or false true ))))
+(% A2 (th_holds (iff (p_app y) (xor (xor (xor true false) true) true)))
+(% A3 (th_holds (= (BitVec 4) (a_var_bv 4 z) (bvand 4 (bvand 4 (a_bv 4 (bvc b0 (bvc b0 (bvc b0 (bvc b0  bvn))))) (a_bv 4 (bvc b0 (bvc b1 (bvc b0 (bvc b1  bvn))))))(a_bv 4 (bvc b1 (bvc b0 (bvc b1 (bvc b0  bvn))))))))
+(: (holds cln)
+
+ ;; Printing deferred declarations 
+
+
+ ;; Printing the global let map ;; Printing aliasing declarations 
+
+
+ ;; Rewrites for Lemmas 
+
+ ;; In the preprocessor we trust 
+(th_let_pf _ (trust_f (p_app x)) (\ .PA252
+(th_let_pf _ (trust_f (not (p_app x))) (\ .PA296
+
+;; Printing mapping from preprocessed assertions into atoms 
+(decl_atom (p_app x) (\ .v2 (\ .a2
+(satlem _ _ (ast _ _ _ .a2 (\ .l5 (clausify_false (contra _ .l5 .PA296)))) (\ .pb4
+(satlem _ _ (asf _ _ _ .a2 (\ .l4 (clausify_false (contra _ .PA252 .l4)))) (\ .pb5
+ ;; Theory Lemmas 
+
+;; BB atom mapping
+
+
+;; Bit-blasting definitional clauses 
+
+
+ ;; Bit-blasting learned clauses 
+
+;; Printing final unsat proof 
+(satlem_simplify _ _ _ (R _ _ .pb5 .pb4 .v2) (\ empty empty)))))))))))))))))))))))))))
+;;

@@ -1,0 +1,35 @@
+(check
+ ;; Declarations
+(% A1 (th_holds true)
+(% A0 (th_holds (bvule 2  (a_bv 2 (bvc b1 (bvc b1  bvn))) (bvadd 2 (a_bv 2 (bvc b1 (bvc b1  bvn))) (a_bv 2 (bvc b0 (bvc b1  bvn))))))
+(: (holds cln)
+
+ ;; Printing deferred declarations 
+
+
+ ;; Printing the global let map ;; Printing aliasing declarations 
+
+
+ ;; Rewrites for Lemmas 
+
+ ;; In the preprocessor we trust 
+(th_let_pf _ (trust_f false) (\ .PA237
+(th_let_pf _ (trust_f (not false)) (\ .PA279
+
+;; Printing mapping from preprocessed assertions into atoms 
+(decl_atom false (\ .v1 (\ .a1
+(satlem _ _ (ast _ _ _ .a1 (\ .l3 (clausify_false (contra _ .l3 .PA279)))) (\ .pb1
+(satlem _ _ (asf _ _ _ .a1 (\ .l2 (clausify_false (contra _ .PA237 .l2)))) (\ .pb4
+ ;; Theory Lemmas 
+
+;; BB atom mapping
+
+
+;; Bit-blasting definitional clauses 
+
+
+ ;; Bit-blasting learned clauses 
+
+;; Printing final unsat proof 
+(satlem_simplify _ _ _ (R _ _ .pb4 .pb1 .v1) (\ empty empty)))))))))))))))))
+;;

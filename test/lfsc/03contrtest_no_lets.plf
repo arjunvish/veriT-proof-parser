@@ -1,0 +1,42 @@
+(check
+ ;; Declarations
+(% c (term Bool)
+(% b (term Bool)
+(% A3 (th_holds true)
+(% A2 (th_holds (p_app c))
+(% A1 (th_holds (or (p_app b) (not (p_app c))))
+(% A0 (th_holds (not (p_app b)))
+(: (holds cln)
+
+ ;; Printing deferred declarations 
+
+
+ ;; Printing the global let map ;; Printing aliasing declarations 
+
+
+ ;; Rewrites for Lemmas 
+
+ ;; In the preprocessor we trust 
+(th_let_pf _ (trust_f (p_app c)) (\ .PA241
+(th_let_pf _ (trust_f (or (p_app b) (not (p_app c)))) (\ .PA262
+(th_let_pf _ (trust_f (not (p_app b))) (\ .PA242
+
+;; Printing mapping from preprocessed assertions into atoms 
+(decl_atom (p_app b) (\ .v2 (\ .a2
+(decl_atom (p_app c) (\ .v3 (\ .a3
+(satlem _ _ (ast _ _ _ .a2 (\ .l5 (clausify_false (contra _ .l5 .PA242)))) (\ .pb4
+(satlem _ _ (ast _ _ _ .a3 (\ .l7 (asf _ _ _ .a2 (\ .l4 (clausify_false (contra _ .l7 (or_elim_1 _ _ .l4 .PA262))))))) (\ .pb5
+(satlem _ _ (asf _ _ _ .a3 (\ .l6 (clausify_false (contra _ .PA241 .l6)))) (\ .pb6
+ ;; Theory Lemmas 
+
+;; BB atom mapping
+
+
+;; Bit-blasting definitional clauses 
+
+
+ ;; Bit-blasting learned clauses 
+
+;; Printing final unsat proof 
+(satlem_simplify _ _ _ (R _ _ .pb5 .pb4 .v2) (\ .cl7
+(satlem_simplify _ _ _ (R _ _ .pb6 .cl7 .v3) (\ empty empty))))))))))))))))))))))))))))))

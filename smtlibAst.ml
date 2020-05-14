@@ -134,3 +134,11 @@ let rec to_string_sorted_term =
 let rec to_string (l : t) = 
   let l_str = (List.map (to_string_sorted_term) (l)) in
   (String.concat "\n" l_str)
+
+let rec eq (t1 : t) (t2 : t) : bool =
+  match t1 with
+  | True :: t -> eq t t2
+  | h :: t -> (match (List.find (fun x -> h = x) t2) with
+              | x -> eq t t2
+              | exception Not_found -> false)
+  | [] -> true

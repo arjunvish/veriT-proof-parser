@@ -1,0 +1,39 @@
+(check
+ ;; Declarations
+(% I sort
+(% y (term I)
+(% x (term I)
+(% A2 (th_holds true)
+(% A1 (th_holds (not (= I x y)))
+(% A0 (th_holds (= I x y))
+(: (holds cln)
+
+ ;; Printing deferred declarations 
+
+
+ ;; Printing the global let map ;; Printing aliasing declarations 
+
+
+ ;; Rewrites for Lemmas 
+
+ ;; In the preprocessor we trust 
+(th_let_pf _ (trust_f (not (= I x y))) (\ .PA274
+(th_let_pf _ (trust_f (= I x y)) (\ .PA256
+
+;; Printing mapping from preprocessed assertions into atoms 
+(decl_atom (= I x y) (\ .v2 (\ .a2
+(satlem _ _ (asf _ _ _ .a2 (\ .l4 (clausify_false (contra _ .PA256 .l4)))) (\ .pb4
+(satlem _ _ (ast _ _ _ .a2 (\ .l5 (clausify_false (contra _ .l5 .PA274)))) (\ .pb5
+ ;; Theory Lemmas 
+
+;; BB atom mapping
+
+
+;; Bit-blasting definitional clauses 
+
+
+ ;; Bit-blasting learned clauses 
+
+;; Printing final unsat proof 
+(satlem_simplify _ _ _ (Q _ _ .pb5 .pb4 .v2) (\ empty empty)))))))))))))))))))))
+;;

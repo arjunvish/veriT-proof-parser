@@ -1,0 +1,118 @@
+(check
+ ;; Declarations
+(% b (term Bool)
+(% a (term Bool)
+(% y (term Bool)
+(% x (term Bool)
+(% BOOLEAN_TERM_VARIABLE_275 (term Bool)
+(% BOOLEAN_TERM_VARIABLE_268 (term Bool)
+(% BOOLEAN_TERM_VARIABLE_273 (term Bool)
+(% BOOLEAN_TERM_VARIABLE_270 (term Bool)
+(% f (term (arrow Bool (arrow Bool Bool)))
+(% A3 (th_holds true)
+(% A1 (th_holds (iff (p_app a) (p_app x) ))
+(% A2 (th_holds (iff (p_app b) (p_app y) ))
+(% A0 (th_holds (not (iff (p_app (apply _ _ (apply _ _ f a)b)) (p_app (apply _ _ (apply _ _ f x)y)))))
+(: (holds cln)
+
+ ;; Printing deferred declarations 
+
+
+ ;; Printing the global let map ;; Printing aliasing declarations 
+
+
+ ;; Rewrites for Lemmas 
+
+ ;; In the preprocessor we trust 
+(th_let_pf _ (trust_f (iff (p_app BOOLEAN_TERM_VARIABLE_268) (p_app a) )) (\ .PA269
+(th_let_pf _ (trust_f (iff (p_app a) (p_app x) )) (\ .PA266
+(th_let_pf _ (trust_f (iff (p_app BOOLEAN_TERM_VARIABLE_273) (p_app x) )) (\ .PA274
+(th_let_pf _ (trust_f (not (iff (p_app (apply _ _ (apply _ _ f BOOLEAN_TERM_VARIABLE_268)BOOLEAN_TERM_VARIABLE_270)) (p_app (apply _ _ (apply _ _ f BOOLEAN_TERM_VARIABLE_273)BOOLEAN_TERM_VARIABLE_275))))) (\ .PA279
+(th_let_pf _ (trust_f (iff (p_app BOOLEAN_TERM_VARIABLE_275) (p_app y) )) (\ .PA276
+(th_let_pf _ (trust_f (iff (p_app BOOLEAN_TERM_VARIABLE_270) (p_app b) )) (\ .PA271
+(th_let_pf _ (trust_f (iff (p_app b) (p_app y) )) (\ .PA267
+
+;; Printing mapping from preprocessed assertions into atoms 
+(decl_atom (p_app x) (\ .v5 (\ .a5
+(decl_atom (p_app y) (\ .v7 (\ .a7
+(decl_atom (p_app a) (\ .v4 (\ .a4
+(decl_atom (p_app b) (\ .v6 (\ .a6
+(decl_atom (p_app BOOLEAN_TERM_VARIABLE_268) (\ .v8 (\ .a8
+(decl_atom (p_app BOOLEAN_TERM_VARIABLE_270) (\ .v9 (\ .a9
+(decl_atom (p_app (apply _ _ (apply _ _ f BOOLEAN_TERM_VARIABLE_268)BOOLEAN_TERM_VARIABLE_270)) (\ .v2 (\ .a2
+(decl_atom (p_app BOOLEAN_TERM_VARIABLE_273) (\ .v10 (\ .a10
+(decl_atom (p_app BOOLEAN_TERM_VARIABLE_275) (\ .v11 (\ .a11
+(decl_atom (p_app (apply _ _ (apply _ _ f BOOLEAN_TERM_VARIABLE_273)BOOLEAN_TERM_VARIABLE_275)) (\ .v3 (\ .a3
+(satlem _ _ (asf _ _ _ .a3 (\ .l6 (asf _ _ _ .a2 (\ .l4 (clausify_false (contra _ (not_not_elim _ (or_elim_1 _ _ .l4 (iff_elim_2 _ _ (not_iff_elim _ _ .PA279)))) .l6)))))) (\ .pb5
+(satlem _ _ (ast _ _ _ .a11 (\ .l23 (asf _ _ _ .a7 (\ .l14 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ .l23) (iff_elim_1 _ _ .PA276)) .l14)))))) (\ .pb16
+(satlem _ _ (ast _ _ _ .a7 (\ .l15 (asf _ _ _ .a6 (\ .l12 (clausify_false (contra _ (or_elim_1 _ _ .l12 (iff_elim_2 _ _ .PA267)) (not_not_intro _ .l15))))))) (\ .pb9
+(satlem _ _ (ast _ _ _ .a6 (\ .l13 (asf _ _ _ .a9 (\ .l18 (clausify_false (contra _ (or_elim_1 _ _ .l18 (iff_elim_2 _ _ .PA271)) (not_not_intro _ .l13))))))) (\ .pb13
+(satlem _ _ (asf _ _ _ .a10 (\ .l20 (ast _ _ _ .a5 (\ .l11 (clausify_false (contra _ (or_elim_1 _ _ .l20 (iff_elim_2 _ _ .PA274)) (not_not_intro _ .l11))))))) (\ .pb15
+(satlem _ _ (ast _ _ _ .a3 (\ .l7 (ast _ _ _ .a2 (\ .l5 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ .l5) (iff_elim_1 _ _ (not_iff_elim _ _ .PA279))) (not_not_intro _ .l7))))))) (\ .pb4
+(satlem _ _ (asf _ _ _ .a7 (\ .l14 (ast _ _ _ .a6 (\ .l13 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ .l13) (iff_elim_1 _ _ .PA267)) .l14)))))) (\ .pb8
+(satlem _ _ (asf _ _ _ .a6 (\ .l12 (ast _ _ _ .a9 (\ .l19 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ .l19) (iff_elim_1 _ _ .PA271)) .l12)))))) (\ .pb12
+(satlem _ _ (asf _ _ _ .a11 (\ .l22 (ast _ _ _ .a7 (\ .l15 (clausify_false (contra _ (or_elim_1 _ _ .l22 (iff_elim_2 _ _ .PA276)) (not_not_intro _ .l15))))))) (\ .pb17
+(satlem _ _ (asf _ _ _ .a5 (\ .l10 (ast _ _ _ .a4 (\ .l9 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ .l9) (iff_elim_1 _ _ .PA266)) .l10)))))) (\ .pb6
+(satlem _ _ (ast _ _ _ .a10 (\ .l21 (asf _ _ _ .a5 (\ .l10 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ .l21) (iff_elim_1 _ _ .PA274)) .l10)))))) (\ .pb14
+(satlem _ _ (ast _ _ _ .a5 (\ .l11 (asf _ _ _ .a4 (\ .l8 (clausify_false (contra _ (or_elim_1 _ _ .l8 (iff_elim_2 _ _ .PA266)) (not_not_intro _ .l11))))))) (\ .pb7
+(satlem _ _ (asf _ _ _ .a8 (\ .l16 (ast _ _ _ .a4 (\ .l9 (clausify_false (contra _ (or_elim_1 _ _ .l16 (iff_elim_2 _ _ .PA269)) (not_not_intro _ .l9))))))) (\ .pb11
+(satlem _ _ (ast _ _ _ .a8 (\ .l17 (asf _ _ _ .a4 (\ .l8 (clausify_false (contra _ (or_elim_1 _ _ (not_not_intro _ .l17) (iff_elim_1 _ _ .PA269)) .l8)))))) (\ .pb10
+ ;; Theory Lemmas 
+
+;; BB atom mapping
+
+
+;; Bit-blasting definitional clauses 
+
+
+ ;; Bit-blasting learned clauses 
+
+(satlem _ _ (asf _ _ _ .a10 (\ .l20 (ast _ _ _ .a11 (\ .l23 (ast _ _ _ .a9 (\ .l19 (asf _ _ _ .a8 (\ .l16 (asf _ _ _ .a3 (\ .l6 (ast _ _ _ .a2 (\ .l5  ;; UF Theory Lemma 
+;;BOOLEAN_TERM_VARIABLE_273 (not BOOLEAN_TERM_VARIABLE_275) (not BOOLEAN_TERM_VARIABLE_270) BOOLEAN_TERM_VARIABLE_268 (f BOOLEAN_TERM_VARIABLE_273 BOOLEAN_TERM_VARIABLE_275) (not (f BOOLEAN_TERM_VARIABLE_268 BOOLEAN_TERM_VARIABLE_270)) 
+(clausify_false (contra _ (trans _ _ _ _ (symm _ _ _ (trans _ _ _ _ (cong _ _ _ _ _ _ (cong _ _ _ _ _ _ (refl _ f) (symm _ _ _ (trans _ _ _ _ (pred_eq_f _ .l16) (symm _ _ _ (pred_eq_f _ .l20))))) (symm _ _ _ (trans _ _ _ _ (pred_eq_t _ .l19) (symm _ _ _ (pred_eq_t _ .l23))))) (pred_eq_t _ .l5))) (pred_eq_f _ .l6)) t_t_neq_f))
+))))))))))))( \ .lemc26
+(satlem _ _ (ast _ _ _ .a10 (\ .l21 (ast _ _ _ .a8 (\ .l17 (ast _ _ _ .a9 (\ .l19 (ast _ _ _ .a11 (\ .l23 (ast _ _ _ .a3 (\ .l7 (asf _ _ _ .a2 (\ .l4  ;; UF Theory Lemma 
+;;(not BOOLEAN_TERM_VARIABLE_273) (not BOOLEAN_TERM_VARIABLE_268) (not BOOLEAN_TERM_VARIABLE_270) (not BOOLEAN_TERM_VARIABLE_275) (not (f BOOLEAN_TERM_VARIABLE_273 BOOLEAN_TERM_VARIABLE_275)) (f BOOLEAN_TERM_VARIABLE_268 BOOLEAN_TERM_VARIABLE_270) 
+(clausify_false (contra _ (trans _ _ _ _ (symm _ _ _ (trans _ _ _ _ (symm _ _ _ (cong _ _ _ _ _ _ (cong _ _ _ _ _ _ (refl _ f) (symm _ _ _ (trans _ _ _ _ (pred_eq_t _ .l17) (symm _ _ _ (pred_eq_t _ .l21))))) (symm _ _ _ (trans _ _ _ _ (pred_eq_t _ .l19) (symm _ _ _ (pred_eq_t _ .l23)))))) (pred_eq_t _ .l7))) (pred_eq_f _ .l4)) t_t_neq_f))
+))))))))))))( \ .lemc22
+(satlem _ _ (ast _ _ _ .a11 (\ .l23 (ast _ _ _ .a9 (\ .l19 (ast _ _ _ .a10 (\ .l21 (ast _ _ _ .a8 (\ .l17 (asf _ _ _ .a3 (\ .l6 (ast _ _ _ .a2 (\ .l5  ;; UF Theory Lemma 
+;;(not BOOLEAN_TERM_VARIABLE_275) (not BOOLEAN_TERM_VARIABLE_270) (not BOOLEAN_TERM_VARIABLE_273) (not BOOLEAN_TERM_VARIABLE_268) (f BOOLEAN_TERM_VARIABLE_273 BOOLEAN_TERM_VARIABLE_275) (not (f BOOLEAN_TERM_VARIABLE_268 BOOLEAN_TERM_VARIABLE_270)) 
+(clausify_false (contra _ (trans _ _ _ _ (symm _ _ _ (trans _ _ _ _ (cong _ _ _ _ _ _ (cong _ _ _ _ _ _ (refl _ f) (symm _ _ _ (trans _ _ _ _ (pred_eq_t _ .l17) (symm _ _ _ (pred_eq_t _ .l21))))) (symm _ _ _ (trans _ _ _ _ (pred_eq_t _ .l19) (symm _ _ _ (pred_eq_t _ .l23))))) (pred_eq_t _ .l5))) (pred_eq_f _ .l6)) t_t_neq_f))
+))))))))))))( \ .lemc36
+(satlem _ _ (asf _ _ _ .a9 (\ .l18 (ast _ _ _ .a10 (\ .l21 (ast _ _ _ .a8 (\ .l17 (asf _ _ _ .a11 (\ .l22 (ast _ _ _ .a3 (\ .l7 (asf _ _ _ .a2 (\ .l4  ;; UF Theory Lemma 
+;;BOOLEAN_TERM_VARIABLE_270 (not BOOLEAN_TERM_VARIABLE_273) (not BOOLEAN_TERM_VARIABLE_268) BOOLEAN_TERM_VARIABLE_275 (not (f BOOLEAN_TERM_VARIABLE_273 BOOLEAN_TERM_VARIABLE_275)) (f BOOLEAN_TERM_VARIABLE_268 BOOLEAN_TERM_VARIABLE_270) 
+(clausify_false (contra _ (trans _ _ _ _ (symm _ _ _ (trans _ _ _ _ (symm _ _ _ (cong _ _ _ _ _ _ (cong _ _ _ _ _ _ (refl _ f) (symm _ _ _ (trans _ _ _ _ (pred_eq_t _ .l17) (symm _ _ _ (pred_eq_t _ .l21))))) (symm _ _ _ (trans _ _ _ _ (pred_eq_f _ .l18) (symm _ _ _ (pred_eq_f _ .l22)))))) (pred_eq_t _ .l7))) (pred_eq_f _ .l4)) t_t_neq_f))
+))))))))))))( \ .lemc20
+(satlem _ _ (asf _ _ _ .a11 (\ .l22 (asf _ _ _ .a9 (\ .l18 (ast _ _ _ .a10 (\ .l21 (ast _ _ _ .a8 (\ .l17 (asf _ _ _ .a3 (\ .l6 (ast _ _ _ .a2 (\ .l5  ;; UF Theory Lemma 
+;;BOOLEAN_TERM_VARIABLE_275 BOOLEAN_TERM_VARIABLE_270 (not BOOLEAN_TERM_VARIABLE_273) (not BOOLEAN_TERM_VARIABLE_268) (f BOOLEAN_TERM_VARIABLE_273 BOOLEAN_TERM_VARIABLE_275) (not (f BOOLEAN_TERM_VARIABLE_268 BOOLEAN_TERM_VARIABLE_270)) 
+(clausify_false (contra _ (trans _ _ _ _ (symm _ _ _ (trans _ _ _ _ (cong _ _ _ _ _ _ (cong _ _ _ _ _ _ (refl _ f) (symm _ _ _ (trans _ _ _ _ (pred_eq_t _ .l17) (symm _ _ _ (pred_eq_t _ .l21))))) (symm _ _ _ (trans _ _ _ _ (pred_eq_f _ .l18) (symm _ _ _ (pred_eq_f _ .l22))))) (pred_eq_t _ .l5))) (pred_eq_f _ .l6)) t_t_neq_f))
+))))))))))))( \ .lemc31
+(satlem _ _ (asf _ _ _ .a9 (\ .l18 (asf _ _ _ .a10 (\ .l20 (asf _ _ _ .a8 (\ .l16 (asf _ _ _ .a11 (\ .l22 (ast _ _ _ .a3 (\ .l7 (asf _ _ _ .a2 (\ .l4  ;; UF Theory Lemma 
+;;BOOLEAN_TERM_VARIABLE_270 BOOLEAN_TERM_VARIABLE_273 BOOLEAN_TERM_VARIABLE_268 BOOLEAN_TERM_VARIABLE_275 (not (f BOOLEAN_TERM_VARIABLE_273 BOOLEAN_TERM_VARIABLE_275)) (f BOOLEAN_TERM_VARIABLE_268 BOOLEAN_TERM_VARIABLE_270) 
+(clausify_false (contra _ (trans _ _ _ _ (symm _ _ _ (trans _ _ _ _ (symm _ _ _ (cong _ _ _ _ _ _ (cong _ _ _ _ _ _ (refl _ f) (symm _ _ _ (trans _ _ _ _ (pred_eq_f _ .l16) (symm _ _ _ (pred_eq_f _ .l20))))) (symm _ _ _ (trans _ _ _ _ (pred_eq_f _ .l18) (symm _ _ _ (pred_eq_f _ .l22)))))) (pred_eq_t _ .l7))) (pred_eq_f _ .l4)) t_t_neq_f))
+))))))))))))( \ .lemc18
+(satlem _ _ (asf _ _ _ .a10 (\ .l20 (asf _ _ _ .a11 (\ .l22 (asf _ _ _ .a9 (\ .l18 (asf _ _ _ .a8 (\ .l16 (asf _ _ _ .a3 (\ .l6 (ast _ _ _ .a2 (\ .l5  ;; UF Theory Lemma 
+;;BOOLEAN_TERM_VARIABLE_273 BOOLEAN_TERM_VARIABLE_275 BOOLEAN_TERM_VARIABLE_270 BOOLEAN_TERM_VARIABLE_268 (f BOOLEAN_TERM_VARIABLE_273 BOOLEAN_TERM_VARIABLE_275) (not (f BOOLEAN_TERM_VARIABLE_268 BOOLEAN_TERM_VARIABLE_270)) 
+(clausify_false (contra _ (trans _ _ _ _ (symm _ _ _ (trans _ _ _ _ (cong _ _ _ _ _ _ (cong _ _ _ _ _ _ (refl _ f) (symm _ _ _ (trans _ _ _ _ (pred_eq_f _ .l16) (symm _ _ _ (pred_eq_f _ .l20))))) (symm _ _ _ (trans _ _ _ _ (pred_eq_f _ .l18) (symm _ _ _ (pred_eq_f _ .l22))))) (pred_eq_t _ .l5))) (pred_eq_f _ .l6)) t_t_neq_f))
+))))))))))))( \ .lemc29
+(satlem _ _ (asf _ _ _ .a10 (\ .l20 (asf _ _ _ .a8 (\ .l16 (ast _ _ _ .a9 (\ .l19 (ast _ _ _ .a11 (\ .l23 (ast _ _ _ .a3 (\ .l7 (asf _ _ _ .a2 (\ .l4  ;; UF Theory Lemma 
+;;BOOLEAN_TERM_VARIABLE_273 BOOLEAN_TERM_VARIABLE_268 (not BOOLEAN_TERM_VARIABLE_270) (not BOOLEAN_TERM_VARIABLE_275) (not (f BOOLEAN_TERM_VARIABLE_273 BOOLEAN_TERM_VARIABLE_275)) (f BOOLEAN_TERM_VARIABLE_268 BOOLEAN_TERM_VARIABLE_270) 
+(clausify_false (contra _ (trans _ _ _ _ (symm _ _ _ (trans _ _ _ _ (symm _ _ _ (cong _ _ _ _ _ _ (cong _ _ _ _ _ _ (refl _ f) (symm _ _ _ (trans _ _ _ _ (pred_eq_f _ .l16) (symm _ _ _ (pred_eq_f _ .l20))))) (symm _ _ _ (trans _ _ _ _ (pred_eq_t _ .l19) (symm _ _ _ (pred_eq_t _ .l23)))))) (pred_eq_t _ .l7))) (pred_eq_f _ .l4)) t_t_neq_f))
+))))))))))))( \ .lemc24
+;; Printing final unsat proof 
+(satlem_simplify _ _ _ (Q _ _ (R _ _ (R _ _ (R _ _ (R _ _ (R _ _ (R _ _ .lemc18 .pb10 .v8) .pb6 .v4) .pb15 .v5) .pb12 .v9) .pb8 .v6) .pb17 .v7) .pb5 .v3) (\ .cl19
+(satlem_simplify _ _ _ (Q _ _ (R _ _ (R _ _ (R _ _ (Q _ _ (Q _ _ (Q _ _ (Q _ _ .lemc20 .pb11 .v8) .pb7 .v4) .pb14 .v5) .cl19 .v10) .pb12 .v9) .pb8 .v6) .pb17 .v7) .pb5 .v3) (\ .cl21
+(satlem_simplify _ _ _ (Q _ _ (Q _ _ (Q _ _ (Q _ _ (Q _ _ (Q _ _ (Q _ _ (Q _ _ .lemc22 .pb15 .v10) .pb6 .v5) .pb10 .v4) .pb13 .v9) .pb9 .v6) .pb16 .v7) .cl21 .v11) .pb5 .v3) (\ .cl23
+(satlem_simplify _ _ _ (Q _ _ (Q _ _ (Q _ _ (Q _ _ (Q _ _ (R _ _ (R _ _ (R _ _ (R _ _ .lemc24 .pb14 .v10) .pb7 .v5) .pb11 .v4) .cl23 .v8) .pb13 .v9) .pb9 .v6) .pb16 .v7) .cl21 .v11) .pb5 .v3) (\ .cl25
+(satlem_simplify _ _ _ (Q _ _ .pb4 .cl25 .v2) (\ .cl27
+(satlem_simplify _ _ _ (Q _ _ (Q _ _ (Q _ _ (Q _ _ (R _ _ .lemc26 .cl27 .v3) .cl25 .v2) .pb13 .v9) .pb9 .v6) .pb16 .v7) (\ .cl28
+(satlem_simplify _ _ _ (R _ _ (R _ _ (R _ _ (R _ _ (R _ _ (R _ _ (R _ _ (Q _ _ (R _ _ .lemc29 .cl27 .v3) .cl25 .v2) .pb12 .v9) .pb8 .v6) .pb17 .v7) .cl28 .v11) .pb14 .v10) .pb10 .v8) .pb7 .v5) (\ .cl30
+(satlem_simplify _ _ _ (Q _ _ .pb6 .cl30 .v4) (\ .cl32
+(satlem_simplify _ _ _ (Q _ _ .pb15 .cl32 .v5) (\ .cl33
+(satlem_simplify _ _ _ (Q _ _ .pb11 .cl30 .v4) (\ .cl34
+(satlem_simplify _ _ _ (R _ _ (R _ _ (R _ _ (Q _ _ (R _ _ (Q _ _ (Q _ _ .lemc31 .cl33 .v10) .cl34 .v8) .cl27 .v3) .cl25 .v2) .pb16 .v11) .pb9 .v7) .pb13 .v6) (\ .cl35
+(satlem_simplify _ _ _ (Q _ _ .pb12 .cl35 .v9) (\ .cl37
+(satlem_simplify _ _ _ (Q _ _ .pb8 .cl37 .v6) (\ .cl38
+(satlem_simplify _ _ _ (Q _ _ .pb17 .cl38 .v7) (\ .cl39
+(satlem_simplify _ _ _ (Q _ _ (R _ _ (Q _ _ (Q _ _ (Q _ _ (Q _ _ .lemc36 .cl39 .v11) .cl35 .v9) .cl33 .v10) .cl34 .v8) .cl27 .v3) .cl25 .v2) (\ empty empty)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+;;
