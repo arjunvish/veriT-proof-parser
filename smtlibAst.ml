@@ -58,6 +58,7 @@ type sorted_term =
   | Bvrepeat of int * sorted_term
   | Bvcomp of sorted_term * sorted_term
   | Error of string
+  | Zilch of unit
 
 type t = sorted_term list
 
@@ -128,6 +129,7 @@ let rec to_string_sorted_term =
                           (to_string_sorted_term x)
   | Bvcomp (x,y) -> concat_sp_sep_3 "bvcomp" (to_string_sorted_term x) (to_string_sorted_term y)
   | Error x -> ("Error: "^x)
+  | Zilch _ -> ""
 
 let rec to_string (l : t) = 
   let l_str = (List.map (to_string_sorted_term) (l)) in

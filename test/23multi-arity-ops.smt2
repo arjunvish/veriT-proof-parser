@@ -5,7 +5,7 @@
 (assert (= x (and true false true)))
 (assert (= x (or false false true)))
 (assert (= y (xor true false true true)))
-(assert (= true false true))
+;(assert (= true false true))
 (assert (= z (bvand #b0000 #b0101 #b1010)))
 (assert (= z (bvor #b1111 #b0101 #b1010)))
 (assert (= z (bvxor #b1111 #b0101 #b1010)))

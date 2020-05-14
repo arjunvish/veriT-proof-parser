@@ -12,15 +12,23 @@
 open Format
 
 let main () =
-  let chan =
+  let chan1 =
     try
-      let filename = Sys.argv.(1) in
-      open_in filename
+      let filename1 = Sys.argv.(1) in
+      open_in filename1
     with Invalid_argument _ -> stdin
   in
-  let buf = Lexing.from_channel chan in
-
-  SmtlibParser.file SmtlibLexer.main buf
+  let chan2 =
+    try
+      let filename2 = Sys.argv.(2) in
+      open_in filename2
+    with Invalid_argument _ -> stdin
+  in
+  let buf1 = Lexing.from_channel chan1 in
+  let buf2 = Lexing.from_channel chan2 in
+  Format.printf "From SMT: %s\nFrom LFSC:\n%s\n" 
+    (SmtlibAst.to_string (SmtlibParser.file SmtlibLexer.main buf1))
+    (LfscAst.to_string (LfscParser.command LfscLexer.main buf2))
 
 let _ = main ()
 

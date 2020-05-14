@@ -23,7 +23,7 @@ let fun_map = Hashtbl.create 10
 
 
 %start file
-%type <unit> file
+%type <SmtlibAst.sorted_term list> file
 %%
 sort:
   | BOOL
@@ -179,7 +179,8 @@ sorted_term:
 
 assertion:
   | LPAREN ASSERT sorted_term RPAREN
-    { (concat_sp_sep_2 "assert" (to_string_sorted_term $3)) }
+    { $3 }
+    (*{ (concat_sp_sep_2 "assert" (to_string_sorted_term $3)) }*)
 ;
 
 args:
@@ -199,27 +200,29 @@ defargs:
 ;
 
 command:
-  | LPAREN SETLOGIC IDENT RPAREN 
-    { (concat_sp_sep_2 "set-logic" $3) }
-  | LPAREN DECLARECONST IDENT sort RPAREN 
-    { (concat_sp_sep_3 "declare-const" $3 $4) }
-  | LPAREN DECLAREFUN IDENT args sort RPAREN
-    { (concat_sp_sep_4 "declare-fun" $3 $4 $5) }
-  | LPAREN DECLARESORT IDENT INT RPAREN
-    { (concat_sp_sep_3 "declare-sort" $3 (string_of_int $4)) }
-  | LPAREN DEFINEFUN IDENT defargs sort sorted_term RPAREN
-    { let _ = (Hashtbl.add fun_map $3 ($4,$6)) in 
-      "" }
-  | LPAREN CHECKSAT RPAREN
-    { (concat_sp_sep_1 "check-sat") }
-  | LPAREN EXIT RPAREN
-    { (concat_sp_sep_1 "exit") }
+  | LPAREN SETLOGIC IDENT RPAREN { Zilch () }
+    (*{ (concat_sp_sep_2 "set-logic" $3) }*)
+  | LPAREN DECLARECONST IDENT sort RPAREN { Zilch () }
+    (*{ (concat_sp_sep_3 "declare-const" $3 $4) }*)
+  | LPAREN DECLAREFUN IDENT args sort RPAREN { Zilch () }
+    (*{ (concat_sp_sep_4 "declare-fun" $3 $4 $5) }*)
+  | LPAREN DECLARESORT IDENT INT RPAREN { Zilch () }
+    (*{ (concat_sp_sep_3 "declare-sort" $3 (string_of_int $4)) }*)
+  | LPAREN DEFINEFUN IDENT defargs sort sorted_term RPAREN { Zilch () }
+    (*{ let _ = (Hashtbl.add fun_map $3 ($4,$6)) in 
+      "" }*)
+  | LPAREN CHECKSAT RPAREN { Zilch () }
+    (*{ (concat_sp_sep_1 "check-sat") }*)
+  | LPAREN EXIT RPAREN { Zilch () }
+    (*{ (concat_sp_sep_1 "exit") }*)
   | assertion
     { $1 }
+    (*{ $1 }*)
 ;
 
 file:
   | l=nonempty_list(command) EOF 
-    { let s = ((String.concat "\n" l)^"\n") in
-      print_string s }
+    { l }
+    (*{ let s = ((String.concat "\n" l)^"\n") in
+      print_string s }*)
 ;
