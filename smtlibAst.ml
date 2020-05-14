@@ -29,7 +29,6 @@ type sorted_term =
   | Select of sorted_term * sorted_term
   | Store of sorted_term * sorted_term * sorted_term
   | Bvbin of string
-  | Bvhex of string
   | Bvand of sorted_term * sorted_term
   | Bvor of sorted_term * sorted_term
   | Bvxor of sorted_term * sorted_term
@@ -88,7 +87,6 @@ let rec to_string_sorted_term =
   | Store (x,y,z) -> concat_sp_sep_4 "store" (to_string_sorted_term x) (to_string_sorted_term y) 
                       (to_string_sorted_term z)
   | Bvbin x -> x
-  | Bvhex x -> x
   | Bvand (x,y) -> concat_sp_sep_3 "bvand" (to_string_sorted_term x) (to_string_sorted_term y)
   | Bvor (x,y) -> concat_sp_sep_3 "bvor" (to_string_sorted_term x) (to_string_sorted_term y)
   | Bvxor (x,y) -> concat_sp_sep_3 "bvxor" (to_string_sorted_term x) (to_string_sorted_term y)
@@ -135,10 +133,11 @@ let rec to_string (l : t) =
   let l_str = (List.map (to_string_sorted_term) (l)) in
   (String.concat "\n" l_str)
 
+(* Must be called with first argument as LFSC tree *)
 let rec eq (t1 : t) (t2 : t) : bool =
   match t1 with
   | True :: t -> eq t t2
   | h :: t -> (match (List.find (fun x -> h = x) t2) with
               | x -> eq t t2
-              | exception Not_found -> false)
+              | exception Not_found -> Format.printf "This assertion not matched: %s\n" (to_string_sorted_term h);false)
   | [] -> true

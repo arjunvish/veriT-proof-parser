@@ -13,6 +13,6 @@
         ((e (bvsub a b))) 
         (g a b)))
 
-(assert (f #b00 #b01))
+(assert (f #b11 #b01))
 (check-sat)
 (exit)

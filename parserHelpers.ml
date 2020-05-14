@@ -2,11 +2,13 @@ open Lexing
 open Format
 open SmtlibAst
 
+exception BadHexDigit
+
 (* Traverse the term "body" and replace all variable occurrences of
    x by y*)
 let rec traverse_and_replace_let (x : sorted_term) (y : sorted_term) (body : sorted_term) : sorted_term = 
 match body with
-  | True | False | Bvbin _ | Bvhex _ | Error _ | Zilch _ -> body
+  | True | False | Bvbin _ | Error _ | Zilch _ -> body
   | Var a -> (match x with 
               | Var m when (a = m) -> y
               | Var _ -> body
@@ -69,7 +71,7 @@ match arg_pairs with
    x by y*)
 let rec traverse_and_replace (x : sorted_term) (y : sorted_term) (body : sorted_term) : sorted_term = 
 match body with
-  | True | False | Bvbin _ | Bvhex _ | Error _ | Zilch _ -> body
+  | True | False | Bvbin _ | Error _ | Zilch _ -> body
   | Var a -> (match x with 
               | Var m when (a = m) -> y
               | Var _ -> Var a
@@ -224,6 +226,47 @@ let bv_dec_to_bin (i : Numeral.t) (size : Numeral.t) : string =
   in
   ("#b"^(bv_to_string (pad bv (Numeral.sub size l))))
 
+let bv_hex_to_bin (i : string) : string = 
+  let len = String.length i in
+  let rec hex_to_bv (i : string) (len : int) : bool list =
+    if (len = 0) then
+      []
+    else
+      let bv = (match (i.[0]) with
+                | '0' -> [false; false; false; false]
+                | '1' -> [false; false; false; true]
+                | '2' -> [false; false; true; false]
+                | '3' -> [false; false; true; true]
+                | '4' -> [false; true; false; false]
+                | '5' -> [false; true; false; true]
+                | '6' -> [false; true; true; false]
+                | '7' -> [false; true; true; true]
+                | '8' -> [true; false; false; false]
+                | '9' -> [true; false; false; true]
+                | 'A' -> [true; false; true; false]
+                | 'B' -> [true; false; true; true]
+                | 'C' -> [true; true; false; false]
+                | 'D' -> [true; true; false; true]
+                | 'E' -> [true; true; true; false]
+                | 'F' -> [true; true; true; true]
+                | 'a' -> [true; false; true; false]
+                | 'b' -> [true; false; true; true]
+                | 'c' -> [true; true; false; false]
+                | 'd' -> [true; true; false; true]
+                | 'e' -> [true; true; true; false]
+                | 'f' -> [true; true; true; true]
+                |  _  -> raise BadHexDigit) in
+      let new_i = String.sub i 1 (len - 1) in
+      bv @ (hex_to_bv new_i (len - 1))
+  in
+  let rec bv_to_string (b : bool list) : string = 
+    match b with
+    | true :: t -> "1"^(bv_to_string t)
+    | false :: t -> "0"^(bv_to_string t)
+    | [] -> ""
+  in
+  ("#b"^(bv_to_string (hex_to_bv i len)))
+  
 let concat_sp_sep_1 a = "("^a^")"
 let concat_sp_sep_2 a b = "("^a^" "^b^")"
 let concat_sp_sep_3 a b c = "("^a^" "^b^" "^c^")"

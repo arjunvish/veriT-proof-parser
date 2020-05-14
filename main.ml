@@ -28,7 +28,7 @@ let main () =
   let buf2 = Lexing.from_channel chan2 in
   let smtTree = (SmtlibParser.file SmtlibLexer.main buf1) in
   let lfscTree = (LfscParser.command LfscLexer.main buf2) in
-  if (SmtlibAst.eq smtTree lfscTree) then
+  if (SmtlibAst.eq lfscTree smtTree) then
     Format.printf "Trees match!\n"
   else
     Format.printf "From SMT: %s\nFrom LFSC:\n%s\n" 

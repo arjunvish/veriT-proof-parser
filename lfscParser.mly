@@ -293,7 +293,7 @@ sorted_bv_term:
   | LPAREN BVZEROEXT int_or_hole i=INT int_or_hole s=sorted_term RPAREN
     { Bvzeroext (i, s) }
   | LPAREN BVSIGNEXT int_or_hole i=INT int_or_hole s=sorted_term RPAREN
-    { Bvzeroext (i, s) }
+    { Bvsignext (i, s) }
   | LPAREN BVREPEAT int_or_hole i=INT int_or_hole s=sorted_term RPAREN
     { Bvrepeat (i, s) }
 ;

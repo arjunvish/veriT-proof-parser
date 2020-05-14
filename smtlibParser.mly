@@ -91,7 +91,9 @@ sorted_term:
   | BVBIN
     { Bvbin $1 }
   | BVHEX
-    { Bvhex $1 }
+    { let len = (String.length $1) in
+      let s = (String.sub $1 2 (len-2)) in
+        Bvbin (bv_hex_to_bin s) }
   | LPAREN INDEX s=BVDEC l=INT RPAREN
     { let len = (String.length s) in
       let i_num = Numeral.of_string (String.sub s 2 (len-2)) in
@@ -208,7 +210,9 @@ command:
     (*{ (concat_sp_sep_4 "declare-fun" $3 $4 $5) }*)
   | LPAREN DECLARESORT IDENT INT RPAREN { Zilch () }
     (*{ (concat_sp_sep_3 "declare-sort" $3 (string_of_int $4)) }*)
-  | LPAREN DEFINEFUN IDENT defargs sort sorted_term RPAREN { Zilch () }
+  | LPAREN DEFINEFUN IDENT defargs sort sorted_term RPAREN 
+    { let _ = (Hashtbl.add fun_map $3 ($4,$6)) in 
+        Zilch () }
     (*{ let _ = (Hashtbl.add fun_map $3 ($4,$6)) in 
       "" }*)
   | LPAREN CHECKSAT RPAREN { Zilch () }
