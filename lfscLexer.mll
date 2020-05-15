@@ -267,6 +267,8 @@
       val bv_bbl_bvult : t
       val bv_bbl_bvslt : t
       val bv_bbl_bvcomp : t
+      val rr_bv_eq : t
+      val rr_bv_default : t
       val rres : t
       val qres : t
       type s = Quoted_string_buffer.t -> Lexing.lexbuf -> t
@@ -504,6 +506,8 @@ rule main buf = parse
   | "bv_bbl_bvult" { Token.bv_bbl_bvult }
   | "bv_bbl_bvslt" { Token.bv_bbl_bvslt }
   | "bv_bbl_bvcomp" { Token.bv_bbl_bvcomp } 
+  | "rr_bv_eq" { Token.rr_bv_eq }
+  | "rr_bv_default" { Token.rr_bv_default }
   | 'R' { Token.rres }  
   | 'Q' { Token.qres }
   | '(' '~' (integer as i) ')' {Token.integer ("-"^i) }
@@ -877,6 +881,8 @@ and scan_block_comment buf locs = parse
         let bv_bbl_bvult = BVBBLBVULT
         let bv_bbl_bvslt = BVBBLBVSLT
         let bv_bbl_bvcomp = BVBBLBVCOMP
+        let rr_bv_eq = RR_BV_EQ
+        let rr_bv_default = RR_BV_DEFAULT
         let rres = RRES
         let qres = QRES
         let block_comment _pos ~main buf lexbuf =

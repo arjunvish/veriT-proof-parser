@@ -38,7 +38,7 @@ let concat_sp_sep_8 a b c d e f g h = "("^a^" "^b^" "^c^" "^d^" "^e^" "^f^" "^g^
 %token BBLTN BBLTC TRUSTBBLASTTERM DECLBBLAST DECLBBLASTWITHALIAS BITOF BVBBLCONST BVBBLVAR INTROASSUMPT INTROASSUMPF
 %token BVBBLEQ BVBBLNEQ BVBBLEQSWAP BVBBLCONCAT BVBBLEXTRACT BVBBLZEROEXT BVBBLSIGNEXT
 %token BVBBLBVAND BVBBLBVNOT BVBBLBVOR BVBBLBVXOR BVBBLBVADD BVBBLBVNEG BVBBLBVMUL BVBBLBVULT BVBBLBVSLT
-%token BVBBLBVCOMP
+%token BVBBLBVCOMP RR_BV_EQ RR_BV_DEFAULT
 
 %token HASH_SEMI SC PROGRAM AT MPQ MPZ KIND PI
 
@@ -169,6 +169,8 @@ proof_term:
   | LPAREN BVBBLEQSWAP int_or_hole sorted_term sorted_term bblt bblt formula bblast_term bblast_term RPAREN { "" }
   | LPAREN BVBBLBVULT int_or_hole sorted_term sorted_term bblt bblt formula bblast_term bblast_term RPAREN { "" }
   | LPAREN BVBBLBVSLT int_or_hole sorted_term sorted_term bblt bblt formula bblast_term bblast_term RPAREN { "" }
+  | LPAREN RR_BV_EQ int_or_hole sorted_term sorted_term RPAREN { "" }
+  | LPAREN RR_BV_DEFAULT formula formula RPAREN { "" }
   | HOLE { "" }
   | IDENT { "" }
 ;

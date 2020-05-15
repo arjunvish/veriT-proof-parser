@@ -1,3 +1,4 @@
+<main.byte>: use_nums
 <main.native>: use_nums
 
 # Sources that use nums
