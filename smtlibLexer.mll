@@ -104,6 +104,7 @@
       val f_or : t
       val f_impl : t
       val f_xor : t
+      val f_distinct : t
       val equals : t
       val f_ite : t
       val bool : t
@@ -217,6 +218,7 @@ rule main buf = parse
   | "or" { Token.f_or }
   | "=>" { Token.f_impl }
   | "xor" { Token.f_xor }
+  | "distinct" { Token.f_distinct }
   | "=" { Token.equals }
   | "ite" { Token.f_ite }
   | "Bool" { Token.bool }
@@ -471,6 +473,7 @@ and scan_block_comment buf locs = parse
         let f_or = OR
         let f_impl = IMPL
         let f_xor = XOR
+        let f_distinct = DISTINCT
         let equals = EQUALS
         let f_ite = ITE
         let bool = BOOL
