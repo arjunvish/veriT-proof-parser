@@ -1,7 +1,0 @@
-(set-logic ALL_SUPPORTED)
-(declare-sort I 0)
-(declare-fun x () I )
-(declare-fun y () I)
-(assert (= x y))
-(assert (not (= x y))) 
-(check-sat)

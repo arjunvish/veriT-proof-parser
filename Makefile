@@ -1,10 +1,10 @@
 native:
-	ocamlbuild -r -no-hygiene -use-menhir main.byte
+	ocamlbuild -r -no-hygiene -use-menhir -menhir "menhir --unused-tokens" src/main.native
 
 byte:
-	ocamlbuild -r -no-hygiene main.d.byte
+	ocamlbuild -r -no-hygiene -use-menhir -menhir "menhir --unused-tokens" src/main.byte
 
-test:
+test: ./main.native
 	./runtests.sh
 
 clean:
