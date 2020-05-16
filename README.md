@@ -30,3 +30,4 @@ Limitations:
 - Doesn't support `define-sort` commands.
 - Doesn't support declaration of sorts that take non-zero arguments using `declare-sort`.
 - Doesn't support the usage of `=` with more than 2 operands. For example, it will fail on `(assert (= true false true))`.
+- Doesn't support `set-info` commands.
