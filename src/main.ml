@@ -12,28 +12,16 @@
 open Format
 
 let main () =
-  let chan1 =
+  let chan =
     try
-      let filename1 = Sys.argv.(1) in
-      open_in filename1
+      let filename = Sys.argv.(1) in
+      open_in filename
     with Invalid_argument _ -> stdin
   in
-  let chan2 =
-    try
-      let filename2 = Sys.argv.(2) in
-      open_in filename2
-    with Invalid_argument _ -> stdin
-  in
-  let buf1 = Lexing.from_channel chan1 in
-  let buf2 = Lexing.from_channel chan2 in
-  let lfscTree = (LfscParser.command LfscLexer.main buf1) in
-  let smtTree = (SmtlibParser.file SmtlibLexer.main buf2) in
-  if (SmtlibAst.eq lfscTree smtTree) then
-    Format.printf "Trees match!\n"
-  else
-    Format.printf "From LFSC:\n%s\n\nFrom SMT:\n%s\n" 
-      (SmtlibAst.to_string lfscTree)
-      (SmtlibAst.to_string smtTree)
+  let buf = Lexing.from_channel chan in
+  let veritTree = (VeritParser.command VeritLexer.main buf) in
+    Format.printf "veriT proof:\n%s\n" 
+      veritTree
 
 let _ = main ()
 
