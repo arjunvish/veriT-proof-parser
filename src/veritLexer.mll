@@ -53,15 +53,6 @@
   (* same length computation as in [Lexing.lexeme] *)
   let lexeme_len { lex_start_pos; lex_curr_pos; _ } = lex_curr_pos - lex_start_pos
 
-  let main_failure lexbuf msg =
-    let { pos_lnum; pos_bol; pos_cnum; pos_fname = _ } = lexeme_start_p lexbuf in
-    let msg =
-      sprintf
-        "Sexplib.Lexer.main: %s at line %d char %d"
-        msg pos_lnum (pos_cnum - pos_bol)
-    in
-    failwith msg
-
   module type T = sig
     module Quoted_string_buffer : sig
       type t
@@ -77,18 +68,14 @@
       val lparen : t
       val rparen : t
       val colon : t
-      val integer : string -> t
-      val ident : string -> t
       val col_rule : t
       val col_step : t
       val col_args : t
       val col_premises : t
-      val assume : t
-      val step : t
-      val anchor : t
-      val define_fun : t
-      val cl : t
-      val choice : t
+      val integer : string -> t
+      val ident : string -> t
+      val simple_string : string -> t
+      val quoted_string : Lexing.position -> Quoted_string_buffer.t -> t
       val eof : t
     end
   end
@@ -123,6 +110,9 @@ let unquoted = [^ ';' '(' ')' '"' '\\' ':' '@' '!' ] # blank # lf_cr
 let digit = ['0'-'9']
 let hexdigit = digit | ['a'-'f' 'A'-'F']
 
+let unquoted_start =
+  unquoted # ['#' '|'] | '#' unquoted # ['|'] | '|' unquoted # ['#']
+
 let integer = digit+
 let ident = ('_')* ['a'-'z' 'A'-'Z' '\'' ]['a'-'z' 'A'-'Z' '0'-'9' '\\' '_']*
 
@@ -134,9 +124,98 @@ rule main buf = parse
   | '(' { Token.lparen }
   | ')' { Token.rparen }
   | ':' { Token.colon }
-  | '(' '~' (integer as i) ')' {Token.integer ("-"^i) }
   | integer as i { Token.integer i }
+  | '"'
+      { 
+        let pos = Lexing.lexeme_start_p lexbuf in
+        Quoted_string_buffer.add_lexeme buf lexbuf;
+        scan_string buf pos lexbuf;
+        let tok = Token.quoted_string pos buf in
+        Quoted_string_buffer.clear buf;
+        tok
+      }
+  | unquoted_start unquoted* as str { Token.simple_string str } (* This seems crucial but can't understand why *)
+  | ":rule" { Token.col_rule }
+  | ":premises" { Token.col_premises}
+  | ":args" { Token.col_args }
   | eof { Token.eof }
+
+and scan_string buf start = parse
+  | '"' { Quoted_string_buffer.add_lexeme buf lexbuf; () }
+  | '\\' lf [' ' '\t']*
+      {
+        let len = lexeme_len lexbuf - 2 in
+        found_newline lexbuf len;
+        Quoted_string_buffer.add_lexeme buf lexbuf;
+        scan_string buf start lexbuf
+      }
+  | '\\' dos_newline [' ' '\t']*
+      {
+        let len = lexeme_len lexbuf - 3 in
+        found_newline lexbuf len;
+        Quoted_string_buffer.add_lexeme buf lexbuf;
+        scan_string buf start lexbuf
+      }
+  | '\\' (['\\' '\'' '"' 'n' 't' 'b' 'r' ' '] as c)
+      {
+        Quoted_string_buffer.add_char buf (char_for_backslash c);
+        Quoted_string_buffer.add_lexeme buf lexbuf;
+        scan_string buf start lexbuf
+      }
+  | '\\' (digit as c1) (digit as c2) (digit as c3)
+      {
+        let v = dec_code c1 c2 c3 in
+        if v > 255 then (
+          let { pos_lnum; pos_bol; pos_cnum; pos_fname = _ } = lexeme_end_p lexbuf in
+          let msg =
+            sprintf
+              "Sexplib.Lexer.scan_string: \
+               illegal escape at line %d char %d: `\\%c%c%c'"
+              pos_lnum (pos_cnum - pos_bol - 3)
+              c1 c2 c3 in
+          failwith msg);
+        Quoted_string_buffer.add_char buf (Char.chr v);
+        Quoted_string_buffer.add_lexeme buf lexbuf;
+        scan_string buf start lexbuf
+      }
+  | '\\' 'x' (hexdigit as c1) (hexdigit as c2)
+      {
+        let v = hex_code c1 c2 in
+        Quoted_string_buffer.add_char buf (Char.chr v);
+        Quoted_string_buffer.add_lexeme buf lexbuf;
+        scan_string buf start lexbuf
+      }
+  | '\\' (_ as c)
+      {
+        Quoted_string_buffer.add_char buf '\\';
+        Quoted_string_buffer.add_char buf c;
+        Quoted_string_buffer.add_lexeme buf lexbuf;
+        scan_string buf start lexbuf
+      }
+  | lf
+      {
+        found_newline lexbuf 0;
+        Quoted_string_buffer.add_char buf lf;
+        Quoted_string_buffer.add_lexeme buf lexbuf;
+        scan_string buf start lexbuf
+      }
+  | ([^ '\\' '"'] # lf)+
+      {
+        let ofs = lexbuf.lex_start_pos in
+        let len = lexbuf.lex_curr_pos - ofs in
+        Quoted_string_buffer.add_substring buf (Bytes.to_string lexbuf.lex_buffer) ofs len;
+        Quoted_string_buffer.add_lexeme buf lexbuf;
+        scan_string buf start lexbuf
+      }
+  | eof
+      {
+        let msg =
+          sprintf
+            "Sexplib.Lexer.scan_string: unterminated string at line %d char %d"
+            start.pos_lnum (start.pos_cnum - start.pos_bol)
+        in
+        failwith msg
+      }
 
 { (* RESUME FUNCTOR BODY CONTAINING GENERATED CODE *)
 
@@ -162,8 +241,6 @@ rule main buf = parse
       module Token = struct
         open VeritParser
         type t = token
-        type s = Quoted_string_buffer.t -> Lexing.lexbuf -> t
-        let eof = EOF
         let lparen = LPAREN
         let rparen = RPAREN
         let colon = COLON
@@ -171,15 +248,13 @@ rule main buf = parse
         let col_step = COLSTEP
         let col_args = COLARGS
         let col_premises = COLPREMISES
-        let assume = ASSUME
-        let step = STEP
-        let anchor = ANCHOR
-        let define_fun = DEFINEFUN
-        let cl = CL
-        let choice = CHOICE
         let integer i = INT (int_of_string i)
         let ident i =
           try Hashtbl.find keywords i with Not_found -> IDENT i
+        let simple_string x =
+          try Hashtbl.find keywords x with Not_found -> IDENT x
+        let quoted_string _ buf = IDENT (Buffer.contents buf)
+        let eof = EOF
       end
     end)
 

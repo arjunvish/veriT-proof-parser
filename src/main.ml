@@ -19,7 +19,7 @@ let main () =
     with Invalid_argument _ -> stdin
   in
   let buf = Lexing.from_channel chan in
-  let veritTree = (VeritParser.command VeritLexer.main buf) in
+  let veritTree = (VeritParser.proof VeritLexer.main buf) in
     Format.printf "veriT proof:\n%s\n" 
       veritTree
 
