@@ -74,7 +74,7 @@
       val col_premises : t
       val integer : string -> t
       val ident : string -> t
-      val simple_string : string -> t
+      (*val simple_string : string -> t*)
       val quoted_string : Lexing.position -> Quoted_string_buffer.t -> t
       val eof : t
     end
@@ -106,14 +106,21 @@ let lf = '\010'
 let lf_cr = ['\010' '\013']
 let dos_newline = "\013\010"
 let blank = [' ' '\009' '\012']
-let unquoted = [^ ';' '(' ')' '"' '\\' ':' '@' '!' ] # blank # lf_cr
+(*let unquoted = [^ ';' '(' ')' '"' '\\' ':' '@' '!' ] # blank # lf_cr*)
 let digit = ['0'-'9']
+let non_zero_digit = ['1'-'9']
 let hexdigit = digit | ['a'-'f' 'A'-'F']
-
-let unquoted_start =
-  unquoted # ['#' '|'] | '#' unquoted # ['|'] | '|' unquoted # ['#']
+let bindigit = ['0'-'1']
+(*let unquoted_start =
+    unquoted # ['#' '|'] 
+  | '#' unquoted # ['|'] 
+  | '|' unquoted # ['#']*)
 
 let integer = digit+
+let numeral = '0' | non_zero_digit+
+(*let decimal = numeral '.' '0'* *)
+let hexadecimal = '#' 'x' hexdigit+
+let binary = '#' 'b' bindigit+
 let ident = ('_')* ['a'-'z' 'A'-'Z' '\'' ]['a'-'z' 'A'-'Z' '0'-'9' '\\' '_']*
 
 
@@ -134,7 +141,8 @@ rule main buf = parse
         Quoted_string_buffer.clear buf;
         tok
       }
-  | unquoted_start unquoted* as str { Token.simple_string str } (* This seems crucial but can't understand why *)
+  | ident as str { Token.ident str }
+  (*| unquoted_start unquoted* as str { Token.simple_string str }*)
   | ":rule" { Token.col_rule }
   | ":premises" { Token.col_premises}
   | ":args" { Token.col_args }
@@ -251,9 +259,9 @@ and scan_string buf start = parse
         let integer i = INT (int_of_string i)
         let ident i =
           try Hashtbl.find keywords i with Not_found -> IDENT i
-        let simple_string x =
-          try Hashtbl.find keywords x with Not_found -> IDENT x
-        let quoted_string _ buf = IDENT (Buffer.contents buf)
+        (*let simple_string x =
+          try Hashtbl.find keywords x with Not_found -> BLAH x*)
+        let quoted_string _ buf = STRING (Buffer.contents buf)
         let eof = EOF
       end
     end)

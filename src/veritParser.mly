@@ -6,6 +6,8 @@ open Format
 %}
 
 %token <string> IDENT
+%token <string> STRING
+%token <string> BLAH
 %token <int> INT
 %token LPAREN RPAREN EOF COLON
 %token COLRULE COLSTEP COLARGS COLPREMISES
@@ -28,6 +30,7 @@ step_annot:
 
 term:
   | IDENT term* { "" } (* This will produce a shift/reduce conflict : do I reduce IDENt or shift term*? *)
+  | STRING { "" }
 ;
 
 clause:

@@ -1,3 +1,3 @@
 (assume x y)
 (assume a b)
-(step m (cl d e) :rule r1 :args (f g))
+(step m (cl "d" e) :rule r1 :args (f g))
