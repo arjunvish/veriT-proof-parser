@@ -84,20 +84,31 @@ clause:
   | LPAREN CL term* RPAREN { "" }
 ;
 
+function_def:
+  | SYMBOL LPAREN sorted_var* RPAREN sort term { "" }
+;
+
 proof_arg:
-  | ident { "" }
-  | LPAREN ident term RPAREN { "" }
+  | SYMBOL { "" }
+  | LPAREN SYMBOL term RPAREN { "" }
+;
+
+proof_args:
+  | LPAREN proof_arg+ RPAREN { "" }
 ;
 
 step_annot:
-  | COLPREMISES LPAREN s=ident+ RPAREN { "" }
-  | COLARGS proof_arg+ { "" }
-  | COLPREMISES LPAREN ident+ RPAREN COLARGS proof_arg+ { "" }
+  | COLPREMISES LPAREN SYMBOL+ RPAREN { "" }
+  | COLARGS proof_args { "" }
+  | COLPREMISES LPAREN SYMBOL+ RPAREN COLARGS proof_args { "" }
 ;
 
 proof_command:
-  | LPAREN ASSUME ident term RPAREN { "" }
-  | LPAREN STEP ident clause COLRULE ident step_annot RPAREN { "" }
+  | LPAREN ASSUME SYMBOL term RPAREN { "" }
+  | LPAREN STEP SYMBOL clause COLRULE SYMBOL step_annot RPAREN { "" }
+  | LPAREN ANCHOR COLSTEP SYMBOL RPAREN { "" }
+  | LPAREN ANCHOR COLSTEP SYMBOL COLARGS proof_args RPAREN { "" }
+  | LPAREN DEFINEFUN function_def RPAREN { "" }
 ;
 
 proof:
