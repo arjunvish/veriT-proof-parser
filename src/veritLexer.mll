@@ -68,14 +68,19 @@
       val lparen : t
       val rparen : t
       val colon : t
+      val bang : t
       val col_rule : t
       val col_step : t
       val col_args : t
       val col_premises : t
-      val integer : string -> t
-      val ident : string -> t
-      (*val simple_string : string -> t*)
+      val flet : t
+      val forall : t
+      val exists : t
+      val pmatch : t
       val quoted_string : Lexing.position -> Quoted_string_buffer.t -> t
+      val spec_constant : string -> t
+      val keyword : string -> t
+      val ident : string -> t
       val eof : t
     end
   end
@@ -93,6 +98,7 @@
     ("define_fun", DEFINEFUN);
     ("cl", CL);
     ("choice", CHOICE);
+    ("as", AS);
     ]
 
   module Make (X : T) : sig
@@ -106,23 +112,26 @@ let lf = '\010'
 let lf_cr = ['\010' '\013']
 let dos_newline = "\013\010"
 let blank = [' ' '\009' '\012']
-(*let unquoted = [^ ';' '(' ')' '"' '\\' ':' '@' '!' ] # blank # lf_cr*)
+let wspace = ['\009' '\010' '\013' '\032']
+let printable_char = ['\032'-'\126' '\128'-'\255']
 let digit = ['0'-'9']
 let non_zero_digit = ['1'-'9']
 let hexdigit = digit | ['a'-'f' 'A'-'F']
 let bindigit = ['0'-'1']
-(*let unquoted_start =
-    unquoted # ['#' '|'] 
-  | '#' unquoted # ['|'] 
-  | '|' unquoted # ['#']*)
+let letter = ['a'-'z' 'A'-'Z']
+let spl = [ '+' '-' '/' '*' '=' '%' '?' '!' '.' '$' '_' '~' '&' '^' '<' '>' '@']
 
-let integer = digit+
-let numeral = '0' | non_zero_digit+
-(*let decimal = numeral '.' '0'* *)
+let simple_symbol = (letter | spl) (letter | digit | spl)*
+let symbol = simple_symbol | '|' (wspace | printable_char # ['|' '\\'])* '|'
+let numeral = '0' | non_zero_digit digit*
+let decimal = numeral '.' '0'* numeral
 let hexadecimal = '#' 'x' hexdigit+
 let binary = '#' 'b' bindigit+
-let ident = ('_')* ['a'-'z' 'A'-'Z' '\'' ]['a'-'z' 'A'-'Z' '0'-'9' '\\' '_']*
-
+let qstring = '"' (wspace | printable_char)* '"'
+let spec_constant = numeral | decimal | hexadecimal | binary | qstring
+let index = numeral | symbol
+let ident = symbol | '(' '_' symbol index+ ')'
+let keyword = ':' simple_symbol
 
 rule main buf = parse
   | lf | dos_newline { found_newline lexbuf 0;
@@ -131,7 +140,14 @@ rule main buf = parse
   | '(' { Token.lparen }
   | ')' { Token.rparen }
   | ':' { Token.colon }
-  | integer as i { Token.integer i }
+  | '!' { Token.bang }
+  | "let" { Token.flet }
+  | "forall" { Token.forall }
+  | "exists" { Token.exists }
+  | "match" { Token.pmatch }
+  | ":rule" { Token.col_rule }
+  | ":premises" { Token.col_premises}
+  | ":args" { Token.col_args }
   | '"'
       { 
         let pos = Lexing.lexeme_start_p lexbuf in
@@ -141,11 +157,9 @@ rule main buf = parse
         Quoted_string_buffer.clear buf;
         tok
       }
+  | spec_constant as sc { Token.spec_constant sc }
+  | keyword as kw { Token.keyword kw }
   | ident as str { Token.ident str }
-  (*| unquoted_start unquoted* as str { Token.simple_string str }*)
-  | ":rule" { Token.col_rule }
-  | ":premises" { Token.col_premises}
-  | ":args" { Token.col_args }
   | eof { Token.eof }
 
 and scan_string buf start = parse
@@ -252,16 +266,22 @@ and scan_string buf start = parse
         let lparen = LPAREN
         let rparen = RPAREN
         let colon = COLON
+        let bang = BANG
         let col_rule = COLRULE
         let col_step = COLSTEP
         let col_args = COLARGS
         let col_premises = COLPREMISES
-        let integer i = INT (int_of_string i)
+        let flet = LET
+        let forall = FORALL
+        let exists = EXISTS
+        let pmatch = MATCH
+        let spec_constant c = SPECCONST c
+        let keyword k = KEYWORD k
+        let quoted_string _ buf = STRING (Buffer.contents buf)
         let ident i =
           try Hashtbl.find keywords i with Not_found -> IDENT i
         (*let simple_string x =
           try Hashtbl.find keywords x with Not_found -> BLAH x*)
-        let quoted_string _ buf = STRING (Buffer.contents buf)
         let eof = EOF
       end
     end)
