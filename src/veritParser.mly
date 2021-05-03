@@ -96,7 +96,6 @@ step_annot:
 ;
 
 proof_command:
-  | LPAREN BANG KEYWORD { "" }
   | LPAREN ASSUME ident term RPAREN { "" }
   | LPAREN STEP ident clause COLRULE ident step_annot RPAREN { "" }
 ;
