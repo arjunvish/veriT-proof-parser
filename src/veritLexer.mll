@@ -80,7 +80,9 @@
       val quoted_string : Lexing.position -> Quoted_string_buffer.t -> t
       val spec_constant : string -> t
       val keyword : string -> t
-      val ident : string -> t
+      val symbol : string -> t
+      val isymbol : string -> t
+      (*val ident : string -> t*)
       val eof : t
     end
   end
@@ -130,7 +132,8 @@ let binary = '#' 'b' bindigit+
 let qstring = '"' (wspace | printable_char)* '"'
 let spec_constant = numeral | decimal | hexadecimal | binary | qstring
 let index = numeral | symbol
-let ident = symbol | '(' '_' symbol index+ ')'
+(*let ident = symbol | '(' '_' symbol index+ ')'*)
+let isymbol = '(' '_' symbol index+ ')'
 let keyword = ':' simple_symbol
 
 rule main buf = parse
@@ -159,7 +162,9 @@ rule main buf = parse
       }
   | spec_constant as sc { Token.spec_constant sc }
   | keyword as kw { Token.keyword kw }
-  | ident as str { Token.ident str }
+  | symbol as sym { Token.symbol sym }
+  | isymbol as isym { Token.isymbol isym }
+  (*| ident as str { Token.ident str }*)
   | eof { Token.eof }
 
 and scan_string buf start = parse
@@ -278,8 +283,11 @@ and scan_string buf start = parse
         let spec_constant c = SPECCONST c
         let keyword k = KEYWORD k
         let quoted_string _ buf = STRING (Buffer.contents buf)
-        let ident i =
-          try Hashtbl.find keywords i with Not_found -> IDENT i
+        let symbol i =
+          try Hashtbl.find keywords i with Not_found -> SYMBOL i
+        let isymbol i = ISYMBOL i
+        (*let ident i =
+          try Hashtbl.find keywords i with Not_found -> IDENT i*)
         (*let simple_string x =
           try Hashtbl.find keywords x with Not_found -> BLAH x*)
         let eof = EOF

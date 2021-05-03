@@ -5,3 +5,11 @@
 (assume e "asdaksjdklaj")
 (assume f kdfd)
 (assume g (f 1 2 3))
+(assume h (let ((x 1) (y 2)) (f x y)))
+(assume i (forall ((x int) (y real)) (h x y)))
+(assume j (exists ((a blah) (b U)) (plus a b)))
+(assume k (match z 
+		((z1 1)
+		 (z2 2)
+		 (z3 3))))
+(assume l (! f :blah (a :wut)))

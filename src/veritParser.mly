@@ -5,7 +5,9 @@ open Lexing
 open Format
 %}
 
-%token <string> IDENT
+(*%token <string> IDENT*)
+%token <string> SYMBOL
+%token <string> ISYMBOL
 %token <string> SPECCONST
 %token <string> KEYWORD
 %token <string> STRING
@@ -17,16 +19,16 @@ open Format
 %start proof
 %type <string> proof
 %%
-(*
+
 sexpr:
-  | SYM { "" }
+  | SYMBOL { "" }
   | KEYWORD { "" }
   | LPAREN sexpr* RPAREN { "" }
 ;
 
 attr_val:
   | SPECCONST { "" }
-  | SYM { "" }
+  | SYMBOL { "" }
   | LPAREN sexpr* RPAREN { "" }
 ;
 
@@ -34,43 +36,48 @@ attr:
   | KEYWORD { "" }
   | KEYWORD attr_val { "" }
 ;
-*)
+
+ident:
+  | SYMBOL { "" }
+  | ISYMBOL { "" }
+;
+
 sort:
-  | IDENT { "" }
-  | IDENT sort+ { "" }
+  | ident { "" }
+  | ident sort+ { "" }
 ;
 
 qual_id:
-  | IDENT { "" }
-  | LPAREN AS IDENT sort RPAREN { "" }
+  | ident { "" }
+  | LPAREN AS ident sort RPAREN { "" }
 ;
-(*
+
 var_binding:
-  | LPAREN SYM term RPAREN { "" }
+  | LPAREN SYMBOL term RPAREN { "" }
 ;
 
 sorted_var:
-  | LPAREN SYM term RPAREN { "" }
+  | LPAREN SYMBOL term RPAREN { "" }
 ;
  
 pattern:
-  | SYM { "" }
-  | LPAREN SYM SYM+ RPAREN { "" }
+  | SYMBOL { "" }
+  | LPAREN SYMBOL SYMBOL+ RPAREN { "" }
 ;
 
 match_case:
   | LPAREN pattern term RPAREN { "" }
 ;
-*)
+
 term: (* term will produce many shift/reduce conflicts *)
   | SPECCONST { "" }
   | qual_id { "" }
   | LPAREN qual_id term+ RPAREN { "" }
-  (*| LPAREN LET LPAREN var_binding+ RPAREN term RPAREN { "" }
+  | LPAREN LET LPAREN var_binding+ RPAREN term RPAREN { "" }
   | LPAREN FORALL LPAREN sorted_var+ RPAREN term RPAREN { "" }
   | LPAREN EXISTS LPAREN sorted_var+ RPAREN term RPAREN { "" }
   | LPAREN MATCH term LPAREN match_case+ RPAREN RPAREN { "" }
-  | LPAREN BANG term attr+ RPAREN { "" }*)
+  | LPAREN BANG term attr+ RPAREN { "" }
 ;
 
 clause:
@@ -78,19 +85,20 @@ clause:
 ;
 
 proof_arg:
-  | IDENT { "" }
-  | LPAREN IDENT term RPAREN { "" }
+  | ident { "" }
+  | LPAREN ident term RPAREN { "" }
 ;
 
 step_annot:
-  | COLPREMISES LPAREN s=IDENT+ RPAREN { "" }
+  | COLPREMISES LPAREN s=ident+ RPAREN { "" }
   | COLARGS proof_arg+ { "" }
-  | COLPREMISES LPAREN IDENT+ RPAREN COLARGS proof_arg+ { "" }
+  | COLPREMISES LPAREN ident+ RPAREN COLARGS proof_arg+ { "" }
 ;
 
 proof_command:
-  | LPAREN ASSUME IDENT term RPAREN { "" }
-  | LPAREN STEP IDENT clause COLRULE IDENT step_annot RPAREN { "" }
+  | LPAREN BANG KEYWORD { "" }
+  | LPAREN ASSUME ident term RPAREN { "" }
+  | LPAREN STEP ident clause COLRULE ident step_annot RPAREN { "" }
 ;
 
 proof:
