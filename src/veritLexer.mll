@@ -82,7 +82,6 @@
       val keyword : string -> t
       val symbol : string -> t
       val isymbol : string -> t
-      (*val ident : string -> t*)
       val eof : t
     end
   end
@@ -132,7 +131,6 @@ let binary = '#' 'b' bindigit+
 let qstring = '"' (wspace | printable_char)* '"'
 let spec_constant = numeral | decimal | hexadecimal | binary | qstring
 let index = numeral | symbol
-(*let ident = symbol | '(' '_' symbol index+ ')'*)
 let isymbol = '(' '_' symbol index+ ')'
 let keyword = ':' simple_symbol
 
@@ -164,7 +162,6 @@ rule main buf = parse
   | keyword as kw { Token.keyword kw }
   | symbol as sym { Token.symbol sym }
   | isymbol as isym { Token.isymbol isym }
-  (*| ident as str { Token.ident str }*)
   | eof { Token.eof }
 
 and scan_string buf start = parse
@@ -286,10 +283,6 @@ and scan_string buf start = parse
         let symbol i =
           try Hashtbl.find keywords i with Not_found -> SYMBOL i
         let isymbol i = ISYMBOL i
-        (*let ident i =
-          try Hashtbl.find keywords i with Not_found -> IDENT i*)
-        (*let simple_string x =
-          try Hashtbl.find keywords x with Not_found -> BLAH x*)
         let eof = EOF
       end
     end)
