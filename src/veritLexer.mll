@@ -100,6 +100,14 @@
     ("cl", CL);
     ("choice", CHOICE);
     ("as", AS);
+
+    ("true", TRUE);
+    ("false", FALSE);
+    ("not", NOT);
+    ("=>", IMPLIES);
+    ("and", AND);
+    ("or", OR);
+    ("xor", XOR);
     ]
 
   module Make (X : T) : sig
