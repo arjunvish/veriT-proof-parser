@@ -5,7 +5,6 @@ open Lexing
 open Format
 %}
 
-(*%token <string> IDENT*)
 %token <string> SYMBOL
 %token <string> ISYMBOL
 %token <string> SPECCONST

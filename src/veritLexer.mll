@@ -73,6 +73,7 @@
       val col_step : t
       val col_args : t
       val col_premises : t
+      val assume : t
       val flet : t
       val forall : t
       val exists : t
@@ -93,7 +94,6 @@
     tbl
 
   let keywords = mk_hashtbl [
-    ("assume", ASSUME);
     ("step", STEP);
     ("anchor", ANCHOR);
     ("define_fun", DEFINEFUN);
@@ -142,6 +142,7 @@ rule main buf = parse
   | ')' { Token.rparen }
   | ':' { Token.colon }
   | '!' { Token.bang }
+  | "assume" { Token.assume }
   | "let" { Token.flet }
   | "forall" { Token.forall }
   | "exists" { Token.exists }
@@ -273,6 +274,7 @@ and scan_string buf start = parse
         let col_step = COLSTEP
         let col_args = COLARGS
         let col_premises = COLPREMISES
+        let assume = ASSUME
         let flet = LET
         let forall = FORALL
         let exists = EXISTS
