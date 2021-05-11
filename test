@@ -1,0 +1,5 @@
+(assume h1 (and x y))
+(assume h2 (not x))
+(step t3 (cl x) :rule and :premises (h1))
+(step t4 (cl y) :rule and :premises (h1))
+(step t5 (cl) :rule resolution :premises (h2 t3))
