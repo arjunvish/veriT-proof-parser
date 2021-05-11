@@ -14,7 +14,11 @@ open Format
 %token COLRULE COLSTEP COLARGS COLPREMISES
 %token ASSUME STEP ANCHOR DEFINEFUN CL CHOICE AS
 %token LET FORALL EXISTS MATCH
+
 %token TRUE FALSE NOT IMPLIES AND OR XOR
+%token ANDP ANDN ORP ORN XORP1 XORP2 XORN1 XORN2
+%token IMPP IMPN1 IMPN2 NOTOR NOTAND XOR1 XOR2
+%token NXOR1 NXOR2 IMP NIMP1 NIMP2 RES
 
 %start proof
 %type <string> proof
@@ -70,6 +74,13 @@ match_case:
 ;
 
 term: (* term will produce many shift/reduce conflicts *)
+  | TRUE { "" }
+  | FALSE { "" }
+  | LPAREN NOT term RPAREN { "" }
+  | LPAREN IMPLIES term term RPAREN { "" }
+  | LPAREN AND term term RPAREN { "" }
+  | LPAREN OR term term RPAREN { "" }
+  | LPAREN XOR term term RPAREN { "" }
   | SPECCONST { "" }
   | qual_id { "" }
   | LPAREN qual_id term+ RPAREN { "" }
@@ -103,14 +114,45 @@ step_annot:
   | COLPREMISES LPAREN SYMBOL+ RPAREN COLARGS proof_args { "" }
 ;
 
+rulename:
+  | TRUE { "" }
+  | FALSE { "" }
+  | NOT { "" }
+  | IMPLIES { "" }
+  | AND { "" }
+  | OR { "" }
+  | XOR { "" }
+  | ANDP { "" }
+  | ANDN { "" }
+  | ORP { "" }
+  | ORN { "" }
+  | XORP1 { "" }
+  | XORP2 { "" }
+  | XORN1 { "" }
+  | XORN2 { "" }
+  | IMPP { "" }
+  | IMPN1 { "" }
+  | IMPN2 { "" }
+  | NOTOR { "" }
+  | NOTAND { "" }
+  | XOR1 { "" }
+  | XOR2 { "" }
+  | NXOR1 { "" }
+  | NXOR2 { "" }
+  | IMP { "" }
+  | NIMP1 { "" }
+  | NIMP2  { "" }
+  | RES { "" }
+;
+
 proof_command:
-  | LPAREN ASSUME SYMBOL term RPAREN { "" }
-  | LPAREN STEP SYMBOL clause COLRULE SYMBOL step_annot RPAREN { "" }
+  | LPAREN ASSUME SYMBOL t=term RPAREN { t }
+  | LPAREN STEP SYMBOL clause COLRULE r=rulename step_annot RPAREN { r }
   | LPAREN ANCHOR COLSTEP SYMBOL RPAREN { "" }
   | LPAREN ANCHOR COLSTEP SYMBOL COLARGS proof_args RPAREN { "" }
   | LPAREN DEFINEFUN function_def RPAREN { "" }
 ;
 
 proof:
-  | proof_command* EOF { "" }
+  | p=proof_command* EOF { (List.fold_left (^) ("") p) }
 ;

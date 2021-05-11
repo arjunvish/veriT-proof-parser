@@ -108,6 +108,29 @@
     ("and", AND);
     ("or", OR);
     ("xor", XOR);
+
+    (*("assume", ASSUME);*)
+    ("and_pos", ANDP);
+    ("and_neg", ANDN);
+    ("or_pos", ORP);
+    ("or_neg", ORN);
+    ("xor_pos1", XORP1);
+    ("xor_pos2", XORP2);
+    ("xor_neg1", XORN1);
+    ("xor_neg2", XORN2);
+    ("implies_pos", IMPP);
+    ("implies_neg1", IMPN1);
+    ("implies_neg2", IMPN2);
+    ("not_or", NOTOR);
+    ("not_and", NOTAND);
+    ("xor1", XOR1);
+    ("xor2", XOR2);
+    ("not_xor1", NXOR1);
+    ("not_xor2", NXOR2);
+    ("implies", IMP);
+    ("not_implies1", NIMP1);
+    ("not_implies2", NIMP2);
+    ("resolution", RES);
     ]
 
   module Make (X : T) : sig
