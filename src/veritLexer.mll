@@ -74,6 +74,12 @@
       val col_args : t
       val col_premises : t
       val assume : t
+      val step : t
+      val anchor : t
+      val define_fun : t
+      val cl : t
+      val as_tok : t
+      val choice : t
       val flet : t
       val forall : t
       val exists : t
@@ -94,13 +100,7 @@
     tbl
 
   let keywords = mk_hashtbl [
-    ("step", STEP);
-    ("anchor", ANCHOR);
-    ("define_fun", DEFINEFUN);
-    ("cl", CL);
-    ("choice", CHOICE);
-    ("as", AS);
-
+  (* SMTLIB formulas *)
     ("true", TRUE);
     ("false", FALSE);
     ("not", NOT);
@@ -109,7 +109,43 @@
     ("or", OR);
     ("xor", XOR);
 
-    (*("assume", ASSUME);*)
+  (*Basic proof rules*)
+    ("assume", ASSUME);
+    (*true*)
+    (*false*)
+    ("not_not", NOTNOT);
+
+  (* Resolution rules and clause simplifications *)
+    ("th_resolution", THRES);
+    ("resolution", RES);
+    ("tautology", TAUT);
+    ("contraction", CONT);
+
+  (* Equality and congruence reasoning *)
+    ("refl", REFL);
+    ("trans", TRANS);
+    ("cong", CONG);
+    ("eq_reflexive", EQREFL);
+    ("eq_transitive", EQTRANS);
+    ("eq_congruent", EQCONG);
+    ("eq_congruent_pred", EQCONGPRED);
+
+  (* Clausification of Boolean operators *)
+    (*and*)
+    ("not_or", NOTOR);
+    (*or*)
+    ("not_and", NOTAND);
+    ("xor1", XOR1);
+    ("xor2", XOR2);
+    ("not_xor1", NXOR1);
+    ("not_xor2", NXOR2);
+    ("implies", IMP);
+    ("not_implies1", NIMP1);
+    ("not_implies2", NIMP2);
+    ("equiv1", EQ1);
+    ("equiv2", EQ2);
+    ("not_equiv1", NEQ1);
+    ("not_equiv2", NEQ2);
     ("and_pos", ANDP);
     ("and_neg", ANDN);
     ("or_pos", ORP);
@@ -121,16 +157,36 @@
     ("implies_pos", IMPP);
     ("implies_neg1", IMPN1);
     ("implies_neg2", IMPN2);
-    ("not_or", NOTOR);
-    ("not_and", NOTAND);
-    ("xor1", XOR1);
-    ("xor2", XOR2);
-    ("not_xor1", NXOR1);
-    ("not_xor2", NXOR2);
-    ("implies", IMP);
-    ("not_implies1", NIMP1);
-    ("not_implies2", NIMP2);
-    ("resolution", RES);
+    ("equiv_pos1", EQP1);
+    ("equiv_pos2", EQP2);
+    ("equiv_neg1", EQN1);
+    ("equiv_neg2", EQN2);
+
+  (* Clausification of ITE *)
+    ("ite1", ITE1);
+    ("ite2", ITE2);
+    ("ite_pos1", ITEP1);
+    ("ite_pos2", ITEP2);
+    ("ite_neg1", ITEN1);
+    ("ite_neg2", ITEN2);
+    ("not_ite1", NITE1);
+    ("not_ite2", NITE2);
+
+  (* Simplifications on Boolean operators *)
+    ("connective_def", CONNDEF);
+    ("and_simplify", ANDSIMP);
+    ("or_simplify", ORSIMP);
+    ("not_simplify", NOTSIMP);
+    ("implies_simplify", IMPSIMP);
+    ("equiv_simplify", EQSIMP);
+    ("bool_simplify", BOOLSIMP);
+    ("ac_simp", ACSIMP);
+
+  (* Simplifications on ITE operators *)
+    ("ite_simplify", ITESIMP);
+
+  (* Simplifications on equalities *)
+    ("eq_simplify", EQUALSIMP);
     ]
 
   module Make (X : T) : sig
@@ -174,6 +230,12 @@ rule main buf = parse
   | ':' { Token.colon }
   | '!' { Token.bang }
   | "assume" { Token.assume }
+  | "step" { Token.step }
+  | "anchor" { Token.anchor }
+  | "define_fun" { Token.define_fun }
+  | "cl" { Token.cl }
+  | "as" { Token.as_tok }
+  | "choice" { Token.choice }
   | "let" { Token.flet }
   | "forall" { Token.forall }
   | "exists" { Token.exists }
@@ -306,6 +368,12 @@ and scan_string buf start = parse
         let col_args = COLARGS
         let col_premises = COLPREMISES
         let assume = ASSUME
+        let step = STEP
+        let anchor = ANCHOR
+        let define_fun = DEFINEFUN
+        let cl = CL
+        let as_tok = AS
+        let choice = CHOICE
         let flet = LET
         let forall = FORALL
         let exists = EXISTS

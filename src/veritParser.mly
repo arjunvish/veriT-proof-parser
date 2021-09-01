@@ -16,9 +16,18 @@ open Format
 %token LET FORALL EXISTS MATCH
 
 %token TRUE FALSE NOT IMPLIES AND OR XOR
-%token ANDP ANDN ORP ORN XORP1 XORP2 XORN1 XORN2
-%token IMPP IMPN1 IMPN2 NOTOR NOTAND XOR1 XOR2
-%token NXOR1 NXOR2 IMP NIMP1 NIMP2 RES
+%token NOTNOT
+%token THRES RES TAUT CONT
+%token REFL TRANS CONG EQREFL EQTRANS EQCONG EQCONGPRED
+%token NOTOR NOTAND XOR1 XOR2 NXOR1 NXOR2 IMP NIMP1 NIMP2
+%token EQ1 EQ2 NEQ1 NEQ2 ANDP ANDN ORP ORN
+%token XORP1 XORP2 XORN1 XORN2 IMPP IMPN1 IMPN2
+%token EQP1 EQP2 EQN1 EQN2
+%token ITE1 ITE2 ITEP1 ITEP2 ITEN1 ITEN2 NITE1 NITE2
+%token CONNDEF ANDSIMP ORSIMP NOTSIMP IMPSIMP
+%token EQSIMP BOOLSIMP ACSIMP
+%token ITESIMP
+%token EQUALSIMP
 
 %start proof
 %type <string> proof
@@ -114,14 +123,37 @@ step_annot:
   | COLPREMISES LPAREN SYMBOL+ RPAREN COLARGS proof_args { "" }
 ;
 
-rulename:
+rulename: { "" }
+  | ASSUME { "" }
   | TRUE { "" }
   | FALSE { "" }
-  | NOT { "" }
-  | IMPLIES { "" }
+  | NOTNOT { "" }
+  | THRES { "" }
+  | RES { "" }
+  | TAUT { "" }
+  | CONT { "" }
+  | REFL { "" }
+  | TRANS { "" }
+  | CONG { "" }
+  | EQREFL { "" }
+  | EQTRANS { "" }
+  | EQCONG { "" }
+  | EQCONGPRED { "" }
   | AND { "" }
+  | NOTOR { "" }
   | OR { "" }
-  | XOR { "" }
+  | NOTAND { "" }
+  | XOR1 { "" }
+  | XOR2 { "" }
+  | NXOR1 { "" }
+  | NXOR2 { "" }
+  | IMP { "" }
+  | NIMP1 { "" }
+  | NIMP2 { "" }
+  | EQ1 { "" }
+  | EQ2 { "" }
+  | NEQ1 { "" }
+  | NEQ2 { "" }
   | ANDP { "" }
   | ANDN { "" }
   | ORP { "" }
@@ -133,21 +165,33 @@ rulename:
   | IMPP { "" }
   | IMPN1 { "" }
   | IMPN2 { "" }
-  | NOTOR { "" }
-  | NOTAND { "" }
-  | XOR1 { "" }
-  | XOR2 { "" }
-  | NXOR1 { "" }
-  | NXOR2 { "" }
-  | IMP { "" }
-  | NIMP1 { "" }
-  | NIMP2  { "" }
-  | RES { "" }
+  | EQP1 { "" }
+  | EQP2 { "" }
+  | EQN1 { "" }
+  | EQN2 { "" }
+  | ITE1 { "" }
+  | ITE2 { "" }
+  | ITEP1 { "" }
+  | ITEP2 { "" }
+  | ITEN1 { "" }
+  | ITEN2 { "" }
+  | NITE1 { "" }
+  | NITE2 { "" }
+  | CONNDEF { "" }
+  | ANDSIMP { "" }
+  | ORSIMP { "" }
+  | NOTSIMP { "" }
+  | IMPSIMP { "" }
+  | EQSIMP { "" }
+  | BOOLSIMP { "" }
+  | ACSIMP { "" }
+  | ITESIMP { "" }
+  | EQUALSIMP { "" }
 ;
 
 proof_command:
   | LPAREN ASSUME SYMBOL t=term RPAREN { t }
-  | LPAREN STEP SYMBOL clause COLRULE r=rulename step_annot RPAREN { r }
+  | LPAREN STEP SYMBOL clause COLRULE r=rulename step_annot? RPAREN { r }
   | LPAREN ANCHOR COLSTEP SYMBOL RPAREN { "" }
   | LPAREN ANCHOR COLSTEP SYMBOL COLARGS proof_args RPAREN { "" }
   | LPAREN DEFINEFUN function_def RPAREN { "" }

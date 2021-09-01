@@ -1,0 +1,1 @@
+(step t2 (cl (= (and p (not p)) false)) :rule and_simplify)
