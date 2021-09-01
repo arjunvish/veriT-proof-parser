@@ -89,6 +89,8 @@
       val keyword : string -> t
       val symbol : string -> t
       val isymbol : string -> t
+      type s = Quoted_string_buffer.t -> Lexing.lexbuf -> t
+      val comment : string -> main:s -> s
       val eof : t
     end
   end
@@ -225,6 +227,7 @@ rule main buf = parse
   | lf | dos_newline { found_newline lexbuf 0;
                        main buf lexbuf }
   | blank+ { main buf lexbuf }
+  | (';' (_ # lf_cr)*) as text { Token.comment text ~main buf lexbuf }
   | '(' { Token.lparen }
   | ')' { Token.rparen }
   | ':' { Token.colon }
@@ -359,6 +362,7 @@ and scan_string buf start = parse
       module Token = struct
         open VeritParser
         type t = token
+        type s = Quoted_string_buffer.t -> Lexing.lexbuf -> t
         let lparen = LPAREN
         let rparen = RPAREN
         let colon = COLON
@@ -384,6 +388,8 @@ and scan_string buf start = parse
         let symbol i =
           try Hashtbl.find keywords i with Not_found -> SYMBOL i
         let isymbol i = ISYMBOL i
+        let comment _text ~main buf lexbuf =
+          main buf lexbuf (* skip and continue lexing *)
         let eof = EOF
       end
     end)

@@ -1,1 +1,3 @@
+(step t2 (cl (= (and p (not p)) false)) :rule and_simplify) ; this better fucking work
+; please fucking work dude wtf
 (step t2 (cl (= (and p (not p)) false)) :rule and_simplify)
