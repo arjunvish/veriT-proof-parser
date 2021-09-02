@@ -11,7 +11,7 @@ open Format
 %token <string> KEYWORD
 %token <string> STRING
 %token LPAREN RPAREN EOF COLON BANG
-%token COLRULE COLSTEP COLARGS COLPREMISES
+%token COLRULE COLSTEP COLARGS COLPREMISES SAT
 %token ASSUME STEP ANCHOR DEFINEFUN CL CHOICE AS
 %token LET FORALL EXISTS MATCH
 
@@ -190,6 +190,7 @@ rulename: { "" }
 ;
 
 proof_command:
+  | SAT { "" }
   | LPAREN ASSUME SYMBOL t=term RPAREN { t }
   | LPAREN STEP SYMBOL clause COLRULE r=rulename step_annot? RPAREN { r }
   | LPAREN ANCHOR COLSTEP SYMBOL RPAREN { "" }

@@ -91,6 +91,7 @@
       val isymbol : string -> t
       type s = Quoted_string_buffer.t -> Lexing.lexbuf -> t
       val comment : string -> main:s -> s
+      val sat : t
       val eof : t
     end
   end
@@ -246,6 +247,7 @@ rule main buf = parse
   | ":rule" { Token.col_rule }
   | ":premises" { Token.col_premises}
   | ":args" { Token.col_args }
+  | "Formula is Satisfiable" { Token.sat }
   | '"'
       { 
         let pos = Lexing.lexeme_start_p lexbuf in
@@ -371,6 +373,7 @@ and scan_string buf start = parse
         let col_step = COLSTEP
         let col_args = COLARGS
         let col_premises = COLPREMISES
+        let sat = SAT
         let assume = ASSUME
         let step = STEP
         let anchor = ANCHOR
