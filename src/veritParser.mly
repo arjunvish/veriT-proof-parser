@@ -123,7 +123,7 @@ step_annot:
   | COLPREMISES LPAREN SYMBOL+ RPAREN COLARGS proof_args { "" }
 ;
 
-rulename: { "" }
+rulename:
   | ASSUME { "" }
   | TRUE { "" }
   | FALSE { "" }
